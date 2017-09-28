@@ -1,3 +1,6 @@
+# Vim files
+*.swp
+
 # SQLGitHub config file
 config.py
 
