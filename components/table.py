@@ -26,6 +26,12 @@ class SgTable:
             raise ValueError("Index illegal")
         else:
             self._table[key] = value
+
+    def __str__(self):
+        ret = str(self._fields)
+        for row in self._table:
+            ret += "\n" + str(row)
+        return ret
     
     def Append(self, row):
         self._table.append(row)
