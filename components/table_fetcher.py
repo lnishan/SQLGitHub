@@ -1,7 +1,7 @@
 """Fetches data from GitHub API, store and return the data in a SgTable.
 
 Sample Usage:
-    sqlserv = core.SQLGitHub(token)
+    sqlserv = top_level.SQLGitHub(token)
     fetcher = table_fetcher.SgTableFetcher(sqlserv._github)
     print(fetcher.Fetch("abseil"))
     print("----------------------------")
