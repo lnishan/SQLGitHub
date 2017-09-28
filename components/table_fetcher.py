@@ -1,4 +1,15 @@
-"""Fetches data from GitHub API, store and return the data in a SgTable."""
+"""Fetches data from GitHub API, store and return the data in a SgTable.
+
+Sample Usage:
+    sqlserv = core.SQLGitHub(token)
+    fetcher = table_fetcher.SgTableFetcher(sqlserv._github)
+    print(fetcher.Fetch("abseil"))
+    print("----------------------------")
+    print(fetcher.Fetch("abseil.repos"))
+    print("----------------------------")
+    print(fetcher.Fetch("abseil.issues"))
+    print("----------------------------")
+"""
 
 import table
 import inspect
