@@ -13,7 +13,8 @@ import session
 # TODO(lnishan): Change it to SgParseSimple, modify tokenizer and add SgParser to handle unions and joins.
 class SgParser:
     """Parser for SQLGitHub. Outputs SgSession."""
-    _RESERVED_TOKENS = ["select", "from", "where", "group", "order"]
+    
+    _RESERVED_TOKENS = ["select", "from", "where", "group", "order"]  # modify components/tokenizer.py also
 
     def __init__(self, github):
         self._github = github
