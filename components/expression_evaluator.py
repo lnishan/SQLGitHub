@@ -29,7 +29,11 @@ class SgExpressionEvaluator:
         pairs.sort(key=lambda p: len(p[0]), reverse=True)
         for pair in pairs:
             expr = expr.replace(pair[0], str(pair[1]))
-        return eval(expr)
+        try:
+            ret = eval(expr)
+        except:
+            ret = expr
+        return ret
 
     @staticmethod
     def EvaluateExpressionsInRow(fields, row, exprs):
