@@ -16,10 +16,13 @@ class SgSession:
     """A class for SQLGitHub sessions."""
 
     def __init__(self, github, field_exprs, source, condition=None):
-        self._fetcher = table_fetcher.SgTableFetcher(github)
         self._field_exprs = field_exprs
         self._source = source
         self._condition = condition
+
+        # TODO(lnishan): Take expressions in self._condition into account
+        rel_keys = expression_evaluator.SgExpressionEvaluator.ExtractTokensFromExpressions(self._field_exprs)
+        self._fetcher = table_fetcher.SgTableFetcher(github, rel_keys)
 
     def Execute(self):
         # source is either a label (eg. "google.issues") or a SgSession

@@ -1,6 +1,8 @@
 """A set of utility functions to evaluate expressions.
 
 Sample Usage:
+    print(SgExpressionEvaluator.ExtractTokensFromExpression("name + issues_url"))
+    print(SgExpressionEvaluator.ExtractTokensFromExpressions(["name + issues_url", "issues_url - id"]))
     print(SgExpressionEvaluator.EvaluateExpressionInRow(["a", "bb", "ccc"], [1, 2, 3], "bb + 2.0 + ccc / a"))
     print(SgExpressionEvaluator.EvaluateExpressionsInRow(["a", "bb", "ccc"], [1, 2, 3], ["bb + 2.0 + ccc / a", "a + bb + ccc"]))
     t = tb.SgTable()
@@ -10,11 +12,25 @@ Sample Usage:
     print(SgExpressionEvaluator.EvaluateExpressionsInTable(t, ["bb + 2.0 + ccc / a", "a + bb + ccc"]))
 """
 
+import re
+
 import table as tb
 
 
 class SgExpressionEvaluator:
     """A set of utility functions to evaluate expressions."""
+
+    @staticmethod
+    def ExtractTokensFromExpression(expr):
+        return re.findall(r"[\w_]+", expr)
+
+    @staticmethod
+    def ExtractTokensFromExpressions(exprs):
+        ret_set = set()
+        for expr in exprs:
+            for token in re.findall(r"[\w_]+", expr):
+                ret_set.add(token)
+        return list(ret_set)
 
     @staticmethod
     def EvaluateExpressionInRow(fields, row, expr):
