@@ -37,6 +37,10 @@ class SgExpressionEvaluator:
 
     @staticmethod
     def EvaluateExpressionsInTable(table, exprs):
+        # TODO(lnishan): Support aggregating functions.
+        #   Steps
+        #     1. Detect and add additional fields (eg. MAX(<field name>)).
+        #     2. Fill the values of the additional fields for each row.
         ret = tb.SgTable()
         ret.SetFields(exprs)
         for row in table:
