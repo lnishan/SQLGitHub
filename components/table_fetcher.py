@@ -2,7 +2,7 @@
 
 Sample Usage:
     sqlserv = top_level.SQLGitHub(token)
-    fetcher = table_fetcher.SgTableFetcher(sqlserv._github)
+    fetcher = SgTableFetcher(sqlserv._github)
     print(fetcher.Fetch("abseil"))
     print("----------------------------")
     print(fetcher.Fetch("abseil.repos"))
