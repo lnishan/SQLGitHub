@@ -11,6 +11,7 @@ import table_fetcher
 import expression_evaluator
 
 
+# TODO(lnishan): Change it to SgSessionSimple and add SgSession to handle unions and joins.
 class SgSession:
     """A class for SQLGitHub sessions."""
 
