@@ -29,7 +29,7 @@ class SgTableFetcher:
             return tmp[0], tmp[1]
 
     def _GetKeys(self, cls):
-        return [key for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
+        return [unicode(key, "utf-8") for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
 
     def _GetVals(self, cls):
         return [val for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]

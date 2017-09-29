@@ -14,7 +14,7 @@ import session
 class SgParser:
     """Parser for SQLGitHub. Outputs SgSession."""
     
-    _RESERVED_TOKENS = ["select", "from", "where", "group", "order"]  # modify components/tokenizer.py also
+    _RESERVED_TOKENS = [u"select", u"from", u"where", u"group", u"order"]  # modify components/tokenizer.py also
 
     def __init__(self, github):
         self._github = github
@@ -26,7 +26,7 @@ class SgParser:
         self._condition = None
 
     def _ParseSelect(self, sub_tokens):
-        sub_tokens_str = "".join(sub_tokens)
+        sub_tokens_str = u"".join(sub_tokens)
         self._field_exprs = sub_tokens_str.split(",")
 
     def _ParseFrom(self, sub_tokens):
@@ -40,15 +40,15 @@ class SgParser:
         pass
 
     def _ParseCmdToken(self, cmd_token, sub_tokens):
-        if cmd_token == "select":
+        if cmd_token == u"select":
             self._ParseSelect(sub_tokens)
-        elif cmd_token == "from":
+        elif cmd_token == u"from":
             self._ParseFrom(sub_tokens)
-        elif cmd_token == "where":
+        elif cmd_token == u"where":
             self._ParseWhere(sub_tokens)
-        elif cmd_token == "group":
+        elif cmd_token == u"group":
             self._ParseGroup(sub_tokens)
-        elif cmd_token == "order":
+        elif cmd_token == u"order":
             self._ParseOrder(sub_tokens)
         else:
             raise NotImplementedError("Command token not implemented.")

@@ -28,10 +28,12 @@ class SgExpressionEvaluator:
         pairs = zip(fields, row)
         pairs.sort(key=lambda p: len(p[0]), reverse=True)
         for pair in pairs:
-            expr = expr.replace(pair[0], str(pair[1]))
+            val = pair[1] if isinstance(pair[1], unicode) else unicode(str(pair[1]), "utf-8")
+            expr = expr.replace(pair[0], val)
         try:
             ret = eval(expr)
         except:
+            ret = u""
             ret = expr
         return ret
 

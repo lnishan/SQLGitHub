@@ -8,8 +8,8 @@ Sample Usage:
 class SgTokenizer:
     """Tokenizer for SQLGitHub."""
 
-    _RESERVED_TOKENS = ["select", "from", "where", "group", "order"]  # modify components/parser.py also
+    _RESERVED_TOKENS = [u"select", u"from", u"where", u"group", u"order"]  # modify components/parser.py also
 
     @staticmethod
     def Tokenize(sql):
-        return [token.lower() if token.lower() in SgTokenizer._RESERVED_TOKENS else token for token in sql.split(" ")]
+        return [unicode(token.lower(), "utf-8") if token.lower() in SgTokenizer._RESERVED_TOKENS else token for token in sql.split(" ")]
