@@ -11,7 +11,7 @@ Sample Usage:
     print("----------------------------")
 """
 
-import table
+import table as tb
 import inspect
 
 
@@ -35,7 +35,7 @@ class SgTableFetcher:
         return [val for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
     
     def Fetch(self, label):
-        ret = table.SgTable()
+        ret = tb.SgTable()
         org_name, sub_name = self._Parse(label)
         org = self._github.get_organization(org_name)
         if sub_name == None:  # eg. "google"
