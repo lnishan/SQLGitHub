@@ -20,15 +20,23 @@ import table as tb
 class SgExpressionEvaluator:
     """A set of utility functions to evaluate expressions."""
 
+    # (?:something) means a non-capturing group
+    # Matches anything word that isn't prefixed with a '"' (not a string literal) and postfixed with a '(' (not a function name)
+    # Adding a non-alpha character as matching prefix/postfix to prevent cases like 'www(' having a match 'ww'
+    _TOKEN_PRE = r"(?:[^\"\w_]|^)"
+    _TOKEN_BODY = r"([\w_]+)"
+    _TOKEN_POST = r"(?:[^\(\w_]|$)"
+    _TOKEN_REGEX = _TOKEN_PRE + _TOKEN_BODY + _TOKEN_POST
+
     @staticmethod
     def ExtractTokensFromExpression(expr):
-        return re.findall(r"[\w_]+", expr)
+        return re.findall(SgExpressionEvaluator._TOKEN_REGEX, expr)
 
     @staticmethod
     def ExtractTokensFromExpressions(exprs):
         ret_set = set()
         for expr in exprs:
-            for token in re.findall(r"[\w_]+", expr):
+            for token in re.findall(SgExpressionEvaluator._TOKEN_REGEX, expr):
                 ret_set.add(token)
         return list(ret_set)
 
@@ -45,7 +53,7 @@ class SgExpressionEvaluator:
         pairs.sort(key=lambda p: len(p[0]), reverse=True)
         for pair in pairs:
             val = pair[1] if isinstance(pair[1], unicode) else unicode(str(pair[1]), "utf-8")
-            expr = expr.replace(pair[0], val)
+            expr = re.sub(re.compile(SgExpressionEvaluator._TOKEN_PRE + re.escape(pair[0]) + SgExpressionEvaluator._TOKEN_POST), val, expr)
         try:
             ret = eval(expr)
         except:
