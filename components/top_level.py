@@ -14,6 +14,19 @@ class SQLGitHub:
         self._github = Github(token)
         self._parser = parser.SgParser(self._github)
 
+    def Execute(self, sql):
+        tokens = tokenizer.SgTokenizer.Tokenize(sql)
+        try:
+            session = self._parser.Parse(tokens)
+        except NotImplementedError:
+            sys.stderr.write("Not implemented command tokens in SQL.\n")
+        except SyntaxError:
+            sys.stderr.write("SQL syntax incorrect.\n")
+        else:
+            result = session.Execute()
+            print(result)
+        
+
     def Start(self):
         while True:
             sys.stdout.write(self._PROMPT_STR)
@@ -21,13 +34,4 @@ class SQLGitHub:
             sql = sys.stdin.readline().strip()
             if sql in ["q", "exit"]:
                 break
-            tokens = tokenizer.SgTokenizer.Tokenize(sql)
-            try:
-                session = self._parser.Parse(tokens)
-            except NotImplementedError:
-                sys.stderr.write("Not implemented command tokens in SQL.\n")
-            except SyntaxError:
-                sys.stderr.write("SQL syntax incorrect.\n")
-            else:
-                result = session.Execute()
-                print(result)
+            self.Execute(sql)
