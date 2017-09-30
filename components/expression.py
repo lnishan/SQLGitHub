@@ -1,15 +1,15 @@
 """A set of utility functions to evaluate expressions.
 
 Sample Usage:
-    print(SgExpressionEvaluator.ExtractTokensFromExpression("name + issues_url"))
-    print(SgExpressionEvaluator.ExtractTokensFromExpressions(["name + issues_url", "issues_url - id"]))
-    print(SgExpressionEvaluator.EvaluateExpressionInRow(["a", "bb", "ccc"], [1, 2, 3], "bb + 2.0 + ccc / a"))
-    print(SgExpressionEvaluator.EvaluateExpressionsInRow(["a", "bb", "ccc"], [1, 2, 3], ["bb + 2.0 + ccc / a", "a + bb + ccc"]))
+    print(SgExpression.ExtractTokensFromExpression("name + issues_url"))
+    print(SgExpression.ExtractTokensFromExpressions(["name + issues_url", "issues_url - id"]))
+    print(SgExpression.EvaluateExpressionInRow(["a", "bb", "ccc"], [1, 2, 3], "bb + 2.0 + ccc / a"))
+    print(SgExpression.EvaluateExpressionsInRow(["a", "bb", "ccc"], [1, 2, 3], ["bb + 2.0 + ccc / a", "a + bb + ccc"]))
     t = tb.SgTable()
     t.SetFields(["a", "bb", "ccc"])
     t.Append([1, 2, 3])
     t.Append([2, 4, 6])
-    print(SgExpressionEvaluator.EvaluateExpressionsInTable(t, ["bb + 2.0 + ccc / a", "a + bb + ccc"]))
+    print(SgExpression.EvaluateExpressionsInTable(t, ["bb + 2.0 + ccc / a", "a + bb + ccc"]))
 """
 
 import re
@@ -17,7 +17,7 @@ import re
 import table as tb
 
 
-class SgExpressionEvaluator:
+class SgExpression:
     """A set of utility functions to evaluate expressions."""
 
     # (?:something) means a non-capturing group
@@ -30,13 +30,13 @@ class SgExpressionEvaluator:
 
     @staticmethod
     def ExtractTokensFromExpression(expr):
-        return re.findall(SgExpressionEvaluator._TOKEN_REGEX, expr)
+        return re.findall(SgExpression._TOKEN_REGEX, expr)
 
     @staticmethod
     def ExtractTokensFromExpressions(exprs):
         ret_set = set()
         for expr in exprs:
-            for token in re.findall(SgExpressionEvaluator._TOKEN_REGEX, expr):
+            for token in re.findall(SgExpression._TOKEN_REGEX, expr):
                 ret_set.add(token)
         return list(ret_set)
 
@@ -53,7 +53,7 @@ class SgExpressionEvaluator:
         pairs.sort(key=lambda p: len(p[0]), reverse=True)
         for pair in pairs:
             val = pair[1] if isinstance(pair[1], unicode) else unicode(str(pair[1]), "utf-8")
-            expr = re.sub(re.compile(SgExpressionEvaluator._TOKEN_PRE + re.escape(pair[0]) + SgExpressionEvaluator._TOKEN_POST), val, expr)
+            expr = re.sub(re.compile(SgExpression._TOKEN_PRE + re.escape(pair[0]) + SgExpression._TOKEN_POST), val, expr)
         try:
             ret = eval(expr)
         except:
@@ -63,7 +63,7 @@ class SgExpressionEvaluator:
 
     @staticmethod
     def EvaluateExpressionsInRow(fields, row, exprs):
-        return [SgExpressionEvaluator.EvaluateExpressionInRow(fields, row, expr) for expr in exprs]
+        return [SgExpression.EvaluateExpressionInRow(fields, row, expr) for expr in exprs]
 
     @staticmethod
     def EvaluateExpressionsInTable(table, exprs):
@@ -74,5 +74,5 @@ class SgExpressionEvaluator:
         ret = tb.SgTable()
         ret.SetFields(exprs)
         for row in table:
-            ret.Append(SgExpressionEvaluator.EvaluateExpressionsInRow(table.GetFields(), row, exprs))
+            ret.Append(SgExpression.EvaluateExpressionsInRow(table.GetFields(), row, exprs))
         return ret

@@ -8,7 +8,7 @@ Sample Usage:
 
 import table as tb
 import table_fetcher
-import expression_evaluator
+import expression
 
 
 # TODO(lnishan): Change it to SgSessionSimple and add SgSession to handle unions and joins.
@@ -21,7 +21,7 @@ class SgSession:
         self._condition = condition
 
         # TODO(lnishan): Take expressions in self._condition into account
-        rel_keys = expression_evaluator.SgExpressionEvaluator.ExtractTokensFromExpressions(self._field_exprs)
+        rel_keys = expression.SgExpression.ExtractTokensFromExpressions(self._field_exprs)
         self._fetcher = table_fetcher.SgTableFetcher(github, rel_keys)
 
     def Execute(self):
@@ -35,4 +35,4 @@ class SgSession:
                     filtered_table.Append(row)
         else:
             filtered_table = source_table
-        return expression_evaluator.SgExpressionEvaluator.EvaluateExpressionsInTable(filtered_table, self._field_exprs)
+        return expression.SgExpression.EvaluateExpressionsInTable(filtered_table, self._field_exprs)
