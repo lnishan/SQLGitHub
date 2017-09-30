@@ -11,8 +11,11 @@ Sample Usage:
     print("----------------------------")
 """
 
-import table as tb
+import datetime
 import inspect
+
+import table as tb
+import utilities
 
 
 class SgTableFetcher:
@@ -25,9 +28,11 @@ class SgTableFetcher:
     def _Parse(self, label):
         tmp = label.split(".")
         if len(tmp) == 1:  # no dots
-            return label, None
+            return label, None, None
+        elif len(tmp) == 2:
+            return tmp[0], tmp[1], None
         else:
-            return tmp[0], tmp[1]
+            return tmp[0], tmp[1], tmp[2:]
 
     def _GetKeys(self, cls):
         if self._rel_keys:
@@ -44,7 +49,7 @@ class SgTableFetcher:
     
     def Fetch(self, label):
         ret = tb.SgTable()
-        org_name, sub_name = self._Parse(label)
+        org_name, sub_name, add_info = self._Parse(label)
         org = self._github.get_organization(org_name)
         if sub_name == None:  # eg. "google"
             ret.SetFields(self._GetKeys(org))
@@ -56,9 +61,17 @@ class SgTableFetcher:
                     ret.SetFields(self._GetKeys(repo))
                 ret.Append(self._GetVals(repo))
         elif sub_name == "issues":
+            days = None
+            state = "open"
+            if add_info:
+                for info in add_info:
+                    if utilities.IsNumeric(info):
+                        days = int(info)
+                    elif info in ["all", "open", "closed"]:
+                        state = info
             repos = org.get_repos()
             for repo in repos:
-                issues = repo.get_issues(state="all")
+                issues = repo.get_issues(state=state, since=datetime.datetime.now() - datetime.timedelta(days=days)) if days else repo.get_issues(state=state)
                 for issue in issues:
                     if not ret.GetFields():
                         ret.SetFields(self._GetKeys(repo))
