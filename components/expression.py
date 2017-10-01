@@ -40,6 +40,7 @@ class SgExpression:
                 ret_set.add(token)
         return list(ret_set)
 
+    # TODO(lnishan): Add EvaluateExpressinInTable and make it a recursive function to correctly handle functions.
     @staticmethod
     def EvaluateExpressionInRow(fields, row, expr):
         """
