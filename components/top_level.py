@@ -1,4 +1,5 @@
 import sys
+import time
 
 from github import Github
 from prompt_toolkit import prompt
@@ -23,7 +24,9 @@ class SQLGitHub:
         self._completer = WordCompleter(definition.COMMAND_TOKENS,
                                         ignore_case=True)
 
-    def Execute(self, sql):
+    def Execute(self, sql, measure_time=True):
+        if measure_time:
+            start_time = time.time()
         tokens = tokenizer.SgTokenizer.Tokenize(sql)
         try:
             session = self._parser.Parse(tokens)
@@ -34,6 +37,10 @@ class SQLGitHub:
         else:
             result = session.Execute()
             print(result)
+            print("-")
+            print("Total rows: %d" % (len(result)))
+            if measure_time:
+                print("Total execution time: %.3fs" % (time.time() - start_time))
         
 
     def Start(self):
