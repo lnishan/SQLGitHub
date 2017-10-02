@@ -21,7 +21,7 @@ class SQLGitHub:
     def __init__(self, token):
         self._github = Github(token)
         self._parser = parser.SgParser(self._github)
-        self._completer = WordCompleter(definition.COMMAND_TOKENS,
+        self._completer = WordCompleter(definition.ALL_TOKENS,
                                         ignore_case=True)
 
     def Execute(self, sql, measure_time=True):
@@ -50,6 +50,6 @@ class SQLGitHub:
                          auto_suggest=AutoSuggestFromHistory(),
                          completer=self._completer,
                          lexer=SqlLexer)
-            if sql in ["q", "exit"]:
+            if sql.lower() in definition.EXIT_TOKENS:
                 break
             self.Execute(sql)
