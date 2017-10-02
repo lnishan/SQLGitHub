@@ -1,8 +1,9 @@
 # Vim files
 *.swp
 
-# SQLGitHub config file
+# SQLGitHub files
 config.py
+history.txt
 
 # IDEA Project Files
 .idea/

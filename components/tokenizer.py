@@ -12,4 +12,4 @@ class SgTokenizer:
 
     @staticmethod
     def Tokenize(sql):
-        return [unicode(token.lower(), "utf-8") if token.lower() in definition.COMMAND_TOKENS else token for token in sql.split(" ")]
+        return [token.lower() if token.lower() in definition.COMMAND_TOKENS else token for token in sql.split(" ")]

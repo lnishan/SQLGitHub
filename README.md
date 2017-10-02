@@ -5,9 +5,9 @@ SQLGitHub - Access GitHub API with SQL-like syntaxes
 
 ## Installation
 
-1. Install requests  
+1. Install prerequisites  
 ```bash
-pip install requests
+pip install requests prompt_toolkit pygments
 ```
 
 2. Install my patched PyGithub  
