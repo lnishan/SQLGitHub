@@ -2,7 +2,7 @@ import sys
 import time
 
 from github import Github
-from prompt_toolkit import prompt
+from prompt_toolkit import prompt, AbortAction
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.contrib.completers import WordCompleter
 from prompt_toolkit.history import FileHistory
@@ -49,7 +49,8 @@ class SQLGitHub:
                          history=FileHistory("history.txt"),
                          auto_suggest=AutoSuggestFromHistory(),
                          completer=self._completer,
-                         lexer=SqlLexer)
+                         lexer=SqlLexer,
+                         on_abort=AbortAction.RETRY)
             if sql.lower() in definition.EXIT_TOKENS:
                 break
             self.Execute(sql)
