@@ -7,6 +7,7 @@ Sample Usage:
     print(s.Execute())
 """
 
+import definition
 import session
 
 
@@ -14,8 +15,6 @@ import session
 class SgParser:
     """Parser for SQLGitHub. Outputs SgSession."""
     
-    _RESERVED_TOKENS = [u"select", u"from", u"where", u"group", u"order"]  # modify components/tokenizer.py also
-
     def __init__(self, github):
         self._github = github
         self._Initialize()
@@ -58,7 +57,7 @@ class SgParser:
         cmd_token = None
         sub_tokens = []
         for token in tokens:
-            if token in SgParser._RESERVED_TOKENS:
+            if token in definition.COMMAND_TOKENS:
                 if cmd_token:
                     self._ParseCmdToken(cmd_token, sub_tokens)
                 cmd_token = token

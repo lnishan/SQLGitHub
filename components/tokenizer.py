@@ -4,12 +4,12 @@ Sample Usage:
     print(SgTokenizer.Tokenize("Select name, description from abeil.repos"))
 """
 
+import definition
+
 
 class SgTokenizer:
     """Tokenizer for SQLGitHub."""
 
-    _RESERVED_TOKENS = [u"select", u"from", u"where", u"group", u"order"]  # modify components/parser.py also
-
     @staticmethod
     def Tokenize(sql):
-        return [unicode(token.lower(), "utf-8") if token.lower() in SgTokenizer._RESERVED_TOKENS else token for token in sql.split(" ")]
+        return [unicode(token.lower(), "utf-8") if token.lower() in definition.COMMAND_TOKENS else token for token in sql.split(" ")]
