@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from components import top_level
 
 try:
