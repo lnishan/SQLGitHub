@@ -1,7 +1,7 @@
 """A class to store tables.
 
 Sample Usage:
-    table = table.SgTable()
+    table = SgTable()
     table.Append([1, 2, 3])
     table.Append([2, 4, 6])
     table.Append([3, 6, 9])
@@ -10,6 +10,10 @@ Sample Usage:
     print(table[1])
     table[1] = [2, 2, 2]
     print(table[1])
+    table.SetFields(["a", "b", "c"])
+    print(table.GetVals("a"))
+    print(table.GetVals("b"))
+    print(table.GetVals("c"))
 """
 
 
@@ -44,6 +48,10 @@ class SgTable:
         for row in self._table:
             ret += "\n" + str(row)
         return ret
+
+    def GetVals(self, field):
+        idx = [i for i, f in enumerate(self._fields) if f == field][0]
+        return [row[idx] for row in self._table]
     
     def Append(self, row):
         self._table.append(row)
