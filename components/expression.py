@@ -138,7 +138,7 @@ class SgExpression:
                             reading = 2
                         elif SgExpression._IsFieldTokenCharacter(ch):
                             reading = 1
-                    if ch == "(":  # function
+                    elif ch == "(":  # function
                         for i in range(rows):
                             opds[i].append(token)
                         oprs.append(ch)
@@ -190,6 +190,7 @@ class SgExpression:
                         reading = 0
                     is_start = False
         SgExpression._EvaluateWithPrecedence(opds, oprs)
+        print(opds, oprs)
         return [row[0] for row in opds]
 
 
@@ -234,7 +235,8 @@ class SgExpression:
 
 if __name__ == "__main__":
     table = tb.SgTable()
-    table.SetFields(["a", "b", "a_b"])
+    table.SetFields([u"a", u"b", u"a_b"])
     table.Append([1, 2, 3])
     table.Append([2, 4, 6])
-    print(SgExpression.EvaluateExpression(table, "a * b - a_b"))
+    print(SgExpression.EvaluateExpression(table, u"a LIKE \"ttt\""))
+    print(SgExpression.EvaluateExpression(table, u"a * b - a_b + a_b % a"))
