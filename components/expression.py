@@ -3,13 +3,26 @@
 Sample Usage:
     print(SgExpression.ExtractTokensFromExpression("name + issues_url"))
     print(SgExpression.ExtractTokensFromExpressions(["name + issues_url", "issues_url - id"]))
-    print(SgExpression.EvaluateExpressionInRow(["a", "bb", "ccc"], [1, 2, 3], "bb + 2.0 + ccc / a"))
-    print(SgExpression.EvaluateExpressionsInRow(["a", "bb", "ccc"], [1, 2, 3], ["bb + 2.0 + ccc / a", "a + bb + ccc"]))
-    t = tb.SgTable()
-    t.SetFields(["a", "bb", "ccc"])
-    t.Append([1, 2, 3])
-    t.Append([2, 4, 6])
-    print(SgExpression.EvaluateExpressionsInTable(t, ["bb + 2.0 + ccc / a", "a + bb + ccc"]))
+    table = tb.SgTable()
+    table.SetFields([u"a", u"b", u"a_b", u"c"])
+    table.Append([1, 2, 3, u"A"])
+    table.Append([2, 4, 6, u"BB"])
+    table.Append([3, 6, 9, u"CCC"])
+    print(SgExpression.EvaluateExpression(table, u"CONCAT(\"a\", c, \"ccc\", -7 + 8)"))
+    print(SgExpression.EvaluateExpression(table, u"MAX(a)"))
+    print(SgExpression.EvaluateExpression(table, u"a LIKE \"ttt\""))
+    print("---")
+    print(SgExpression.EvaluateExpression(table, u"a * (b - a_b)"))
+    print(SgExpression.EvaluateExpression(table, u"MIN(a * (b - a_b))"))
+    print(SgExpression.EvaluateExpression(table, u"MAX(a * (b - a_b))"))
+    print(SgExpression.EvaluateExpression(table, u"-7 + a*(b-a_b)"))
+    print(SgExpression.EvaluateExpression(table, u"max(a*(b-a_b))"))
+    print("---")
+    print(SgExpression.EvaluateExpression(table, u"a * b - a_b + a_b % a"))
+    print(SgExpression.EvaluateExpression(table, u"MIN(a * b - a_b + a_b % a)"))
+    print(SgExpression.EvaluateExpression(table, u"MAX(a * b - a_b + a_b % a)"))
+    print(SgExpression.EvaluateExpression(table, u"a*b-a_b+a_b%a"))
+    print(SgExpression.EvaluateExpression(table, u"max(a*b-a_b+a_b%a)"))
 """
 
 import re
@@ -162,12 +175,13 @@ class SgExpression:
         expr += u" "  # add a terminating character (to end token parsing)
         for ch in expr:
             if reading == 3:  # string
-                token += ch
                 if ch in (u"\"", u"\'"):
                     for i in range(rows):
                         opds[i].append(token)
                     token = u""
                     reading = None
+                else:
+                    token += ch
             elif reading == 2:  # number
                 if SgExpression._IsNumericCharacter(ch):
                     token += ch
@@ -194,6 +208,7 @@ class SgExpression:
                             token = ch
                             if ch in (u"\"", "\'"):
                                 reading = 3
+                                token = u""
                             elif SgExpression._IsNumericCharacter(ch):
                                 reading = 2
                             elif SgExpression._IsFieldTokenCharacter(ch):
@@ -241,6 +256,7 @@ class SgExpression:
                         token = ch
                         if ch in (u"\"", "\'"):
                             reading = 3
+                            token = u""
                         elif SgExpression._IsNumericCharacter(ch):
                             reading = 2
                         elif SgExpression._IsFieldTokenCharacter(ch):
@@ -254,6 +270,7 @@ class SgExpression:
                     token += ch
                     if ch in (u"\"", u"\'"):
                         reading = 3
+                        token = u""
                     elif SgExpression._IsNumericCharacter(ch) or (ch == u"-" and is_start):
                         reading = 2
                     elif SgExpression._IsFieldTokenCharacter(ch):
@@ -278,64 +295,3 @@ class SgExpression:
                 # TODO(lnishan): Fix the cheat here.
                 ret._table[i].append(val)
         return ret
-
-    # TODO(lnishan): Add EvaluateExpressinInTable and make it a recursive function to correctly handle functions.
-    @staticmethod
-    def EvaluateExpressionInRow(fields, row, expr):
-        """
-        Evaluates the results of an expression (presumably a non-terminal field)
-        given a list of fields and the values of a row.
-        """
-
-        # TODO(lnishan): This works for now, but in the future we might want to implement
-        # a proper evaluator (correct tokenization, 2-stack evaluation)
-        pairs = zip(fields, row)
-        pairs.sort(key=lambda p: len(p[0]), reverse=True)
-        for pair in pairs:
-            val = pair[1] if isinstance(pair[1], unicode) else unicode(str(pair[1]), "utf-8")
-            expr = re.sub(re.compile(SgExpression._TOKEN_PRE + re.escape(pair[0]) + SgExpression._TOKEN_POST), val, expr)
-        try:
-            ret = eval(expr)
-        except:
-            ret = u""
-            ret = expr
-        return ret
-
-    @staticmethod
-    def EvaluateExpressionsInRow(fields, row, exprs):
-        return [SgExpression.EvaluateExpressionInRow(fields, row, expr) for expr in exprs]
-
-    @staticmethod
-    def EvaluateExpressionsInTable(table, exprs):
-        # TODO(lnishan): Support aggregating functions.
-        #   Steps
-        #     1. Detect and add additional fields (eg. MAX(<field name>)).
-        #     2. Fill the values of the additional fields for each row.
-        ret = tb.SgTable()
-        ret.SetFields(exprs)
-        for row in table:
-            ret.Append(SgExpression.EvaluateExpressionsInRow(table.GetFields(), row, exprs))
-        return ret
-
-
-if __name__ == "__main__":
-    table = tb.SgTable()
-    table.SetFields([u"a", u"b", u"a_b", u"c"])
-    table.Append([1, 2, 3, u"A"])
-    table.Append([2, 4, 6, u"BB"])
-    table.Append([3, 6, 9, u"CCC"])
-    print(SgExpression.EvaluateExpression(table, u"CONCAT(\"a\", c, \"ccc\", -7 + 8)"))
-    print(SgExpression.EvaluateExpression(table, u"MAX(a)"))
-    print(SgExpression.EvaluateExpression(table, u"a LIKE \"ttt\""))
-    print("---")
-    print(SgExpression.EvaluateExpression(table, u"a * (b - a_b)"))
-    print(SgExpression.EvaluateExpression(table, u"MIN(a * (b - a_b))"))
-    print(SgExpression.EvaluateExpression(table, u"MAX(a * (b - a_b))"))
-    print(SgExpression.EvaluateExpression(table, u"-7 + a*(b-a_b)"))
-    print(SgExpression.EvaluateExpression(table, u"max(a*(b-a_b))"))
-    print("---")
-    print(SgExpression.EvaluateExpression(table, u"a * b - a_b + a_b % a"))
-    print(SgExpression.EvaluateExpression(table, u"MIN(a * b - a_b + a_b % a)"))
-    print(SgExpression.EvaluateExpression(table, u"MAX(a * b - a_b + a_b % a)"))
-    print(SgExpression.EvaluateExpression(table, u"a*b-a_b+a_b%a"))
-    print(SgExpression.EvaluateExpression(table, u"max(a*b-a_b+a_b%a)"))
