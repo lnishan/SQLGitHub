@@ -20,8 +20,9 @@ class SgSession:
         self._source = source
         self._condition = condition
 
-        # TODO(lnishan): Take expressions in self._condition into account
         rel_keys = expression.SgExpression.ExtractTokensFromExpressions(self._field_exprs)
+        if self._condition:
+            rel_keys += expression.SgExpression.ExtractTokensFromExpressions([self._condition])
         self._fetcher = table_fetcher.SgTableFetcher(github, rel_keys)
 
     def Execute(self):
