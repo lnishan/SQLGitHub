@@ -33,7 +33,7 @@ class SgParser:
         self._source = sub_tokens[0]
 
     def _ParseWhere(self, sub_tokens):
-        pass
+        self._condition = u" ".join(sub_tokens)
 
     def _ParseGroup(self, sub_tokens):
         pass
