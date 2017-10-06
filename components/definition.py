@@ -19,7 +19,10 @@ OPERATOR_TOKENS = [u"interval",
                    u"and", u"&&",
                    u"xor",
                    u"or", u"||",
-                   u"=", u":="]
+                   u"=", u":=",
+                   u",",
+                   u"(",
+                   u")"]
 
 ALL_TOKENS = EXIT_TOKENS + COMMAND_TOKENS + OPERATOR_TOKENS
 
