@@ -157,6 +157,7 @@ class SgExpression:
         for _ in range(rows):
             opds.append([])
         reading = None  # None = nothing, 0 = operator, 1 = field tokens (can be operator too), 2 = number, 3 = string
+        is_start = True
         token = u""
         expr += u" "  # add a terminating character (to end token parsing)
         for ch in expr:
@@ -315,7 +316,7 @@ if __name__ == "__main__":
     print(SgExpression.EvaluateExpression(table, u"a * (b - a_b)"))
     print(SgExpression.EvaluateExpression(table, u"MIN(a * (b - a_b))"))
     print(SgExpression.EvaluateExpression(table, u"MAX(a * (b - a_b))"))
-    print(SgExpression.EvaluateExpression(table, u"a*(b-a_b)"))
+    print(SgExpression.EvaluateExpression(table, u"-7 + a*(b-a_b)"))
     print(SgExpression.EvaluateExpression(table, u"max(a*(b-a_b))"))
     print("---")
     print(SgExpression.EvaluateExpression(table, u"a * b - a_b + a_b % a"))
