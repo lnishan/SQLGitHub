@@ -23,6 +23,9 @@ Sample Usage:
     print(SgExpression.EvaluateExpression(table, u"MAX(a * b - a_b + a_b % a)"))
     print(SgExpression.EvaluateExpression(table, u"a*b-a_b+a_b%a"))
     print(SgExpression.EvaluateExpression(table, u"max(a*b-a_b+a_b%a)"))
+    print("---")
+    print(SgExpression.EvaluateExpression(table, u"3 + 2 = 5"))
+    print(SgExpression.EvaluateExpression(table, u"6 = 3 + 2"))
 """
 
 import re
@@ -97,6 +100,34 @@ class SgExpression:
         elif opr == u"-":
             for i in range(rows):
                 res = opds[i][-2] - opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"==":
+            for i in range(rows):
+                res = opds[i][-2] == opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u">=":
+            for i in range(rows):
+                res = opds[i][-2] >= opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u">":
+            for i in range(rows):
+                res = opds[i][-2] > opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"<=":
+            for i in range(rows):
+                res = opds[i][-2] <= opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"<":
+            for i in range(rows):
+                res = opds[i][-2] < opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"<>":
+            for i in range(rows):
+                res = opds[i][-2] != opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"!=":
+            for i in range(rows):
+                res = opds[i][-2] != opds[i][-1]
                 opds[i] = opds[i][:-2] + [res]
 
     @staticmethod
