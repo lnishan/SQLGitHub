@@ -36,6 +36,10 @@ Sample Usage:
     print(SgExpression.EvaluateExpression(table, u"c regexp \"B*\""))
     print(SgExpression.EvaluateExpression(table, u"c regexp \"[B-C]*\""))
     print(SgExpression.EvaluateExpression(table, u"\"BB\" in (\"A\", \"B\", c)"))
+    print("---")
+    print(SgExpression.EvaluateExpression(table, "not a + 2 >= b"))
+    print(SgExpression.EvaluateExpression(table, "not a + 2 >= b and a_b > 10"))
+    print(SgExpression.EvaluateExpression(table, "b < 5 || a_b > 10"))
 """
 
 import re
@@ -164,6 +168,21 @@ class SgExpression:
         elif opr == u"in":
             for i in range(rows):
                 res = opds[i][-2] in opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"not":
+            for i in range(rows):
+                opds[i][-1] = not opds[i][-1]
+        elif opr in (u"and", u"&&"):
+            for i in range(rows):
+                res = opds[i][-2] and opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == "xor":
+            for i in range(rows):
+                res = opds[i][-2] != opds[i][-1]  # assumes both are boolean's
+                opds[i] = opds[i][:-2] + [res]
+        elif opr in (u"or", u"||"):
+            for i in range(rows):
+                res = opds[i][-2] or opds[i][-1]
                 opds[i] = opds[i][:-2] + [res]
 
     @staticmethod
