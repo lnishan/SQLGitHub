@@ -54,21 +54,19 @@ class SgExpression:
     # (?:something) means a non-capturing group
     # Matches anything word that isn't prefixed with a '"' (not a string literal) and postfixed with a '(' (not a function name)
     # Adding a non-alpha character as matching prefix/postfix to prevent cases like 'www(' having a match 'ww'
-    _TOKEN_PRE = r"(?:[^\"\w_]|^)"
     _TOKEN_BODY = r"([\w_]+)"
     _TOKEN_POST = r"(?:[^\(\w_]|$)"
-    _TOKEN_REGEX = _TOKEN_PRE + _TOKEN_BODY + _TOKEN_POST
-
-    @staticmethod
-    def ExtractTokensFromExpression(expr):
-        return re.findall(SgExpression._TOKEN_REGEX, expr)
+    _TOKEN_REGEX = _TOKEN_BODY + _TOKEN_POST
 
     @staticmethod
     def ExtractTokensFromExpressions(exprs):
         ret_set = set()
         for expr in exprs:
-            for token in re.findall(SgExpression._TOKEN_REGEX, expr):
-                ret_set.add(token)
+            expr_rem = re.sub(r"\"[^\"]*\"", r"", expr)
+            expr_rem = re.sub(r"\'[^\']*\'", r"", expr_rem)  # string literal removed
+            for token in re.findall(SgExpression._TOKEN_REGEX, expr_rem):
+                if not token in df.ALL_TOKENS:
+                    ret_set.add(token)
         return list(ret_set)
 
     @staticmethod
@@ -158,12 +156,12 @@ class SgExpression:
                     else:
                         regex += re.escape(ch)
                 regex += r"$"
-                res = True if re.match(regex, opds[i][-2]) else False
+                res = True if opds[i][-2] and re.match(regex, opds[i][-2]) else False
                 opds[i] = opds[i][:-2] + [res]
         elif opr == u"regexp":
             for i in range(rows):
                 regex = re.compile(opds[i][-1] + "$")
-                res = True if re.match(regex, opds[i][-2]) else False
+                res = True if opds[i][-2] and re.match(regex, opds[i][-2]) else False
                 opds[i] = opds[i][:-2] + [res]
         elif opr == u"in":
             for i in range(rows):
