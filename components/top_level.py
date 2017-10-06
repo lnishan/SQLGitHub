@@ -25,6 +25,8 @@ class SQLGitHub:
                                         ignore_case=True)
 
     def Execute(self, sql, measure_time=True):
+        if not sql:
+            return
         if measure_time:
             start_time = time.time()
         tokens = tokenizer.SgTokenizer.Tokenize(sql)
@@ -34,6 +36,8 @@ class SQLGitHub:
             sys.stderr.write("Not implemented command tokens in SQL.\n")
         except SyntaxError:
             sys.stderr.write("SQL syntax incorrect.\n")
+        except AttributeError:
+            sys.stderr.write("One or more of the specified fields doesn't exist.\n")
         else:
             result = session.Execute()
             print(result)
