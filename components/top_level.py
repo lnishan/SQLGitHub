@@ -39,15 +39,17 @@ class SQLGitHub:
             sys.stderr.write("Not implemented command tokens in SQL.\n")
         except SyntaxError:
             sys.stderr.write("SQL syntax incorrect.\n")
-        except AttributeError:
-            sys.stderr.write("One or more of the specified fields doesn't exist.\n")
         else:
-            result = session.Execute()
-            print(result)
-            print("-")
-            print("Total rows: %d" % (len(result)))
-            if measure_time:
-                print("Total execution time: %.3fs" % (time.time() - start_time))
+            try:
+                result = session.Execute()
+            except AttributeError:
+                sys.stderr.write("One or more of the specified fields doesn't exist.\n")
+            else:
+                print(result)
+                print("-")
+                print("Total rows: %d" % (len(result)))
+                if measure_time:
+                    print("Total execution time: %.3fs" % (time.time() - start_time))
         
 
     def Start(self):
