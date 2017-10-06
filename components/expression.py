@@ -8,6 +8,7 @@ Sample Usage:
     table.Append([1, 2, 3, u"A"])
     table.Append([2, 4, 6, u"BB"])
     table.Append([3, 6, 9, u"CCC"])
+    table.Append([4, 8, 12, u"ABC"])
     print(SgExpression.EvaluateExpression(table, u"CONCAT(\"a\", c, \"ccc\", -7 + 8)"))
     print(SgExpression.EvaluateExpression(table, u"MAX(a)"))
     print(SgExpression.EvaluateExpression(table, u"a LIKE \"ttt\""))
@@ -26,6 +27,15 @@ Sample Usage:
     print("---")
     print(SgExpression.EvaluateExpression(table, u"3 + 2 = 5"))
     print(SgExpression.EvaluateExpression(table, u"6 = 3 + 2"))
+    print(SgExpression.EvaluateExpression(table, u"a_b * a_b - b > 10"))
+    print(SgExpression.EvaluateExpression(table, u"\"aaa\" is \"aaa\""))
+    print(SgExpression.EvaluateExpression(table, u"c like \"%\""))
+    print(SgExpression.EvaluateExpression(table, u"c like \"%A\""))
+    print(SgExpression.EvaluateExpression(table, u"c like \"C_C\""))
+    print(SgExpression.EvaluateExpression(table, u"c like \"A\""))
+    print(SgExpression.EvaluateExpression(table, u"c regexp \"B*\""))
+    print(SgExpression.EvaluateExpression(table, u"c regexp \"[B-C]*\""))
+    print(SgExpression.EvaluateExpression(table, u"\"BB\" in (\"A\", \"B\", c)"))
 """
 
 import re
@@ -132,6 +142,28 @@ class SgExpression:
         elif opr == u"is":
             for i in range(rows):
                 res = opds[i][-2] == opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"like":
+            for i in range(rows):
+                regex = r""
+                for ch in opds[i][-1]:
+                    if ch == "%":
+                        regex += ".*"
+                    elif ch == "_":
+                        regex += "."
+                    else:
+                        regex += re.escape(ch)
+                regex += r"$"
+                res = True if re.match(regex, opds[i][-2]) else False
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"regexp":
+            for i in range(rows):
+                regex = re.compile(opds[i][-1] + "$")
+                res = True if re.match(regex, opds[i][-2]) else False
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"in":
+            for i in range(rows):
+                res = opds[i][-2] in opds[i][-1]
                 opds[i] = opds[i][:-2] + [res]
 
     @staticmethod
@@ -271,7 +303,7 @@ class SgExpression:
                     is_opr = True
                 elif token == u")":
                     is_opr = False  # just to terminate the current segment
-                elif ch == "(":
+                elif token == u"(":
                     is_opr = False
                 elif token.isalpha():
                     is_opr = ch.isalpha()
