@@ -232,6 +232,8 @@ class SgExpression:
                     token += ch
                 else:
                     SgExpression._ProcessOperator(is_start, opds, oprs, token)
+                    if token == ",":
+                        is_start = True
                     token = u""
                     if ch.isspace():
                         reading = None
@@ -309,7 +311,7 @@ if __name__ == "__main__":
     table.Append([1, 2, 3, u"A"])
     table.Append([2, 4, 6, u"BB"])
     table.Append([3, 6, 9, u"CCC"])
-    print(SgExpression.EvaluateExpression(table, u"CONCAT(\"a\", c, \"ccc\")"))
+    print(SgExpression.EvaluateExpression(table, u"CONCAT(\"a\", c, \"ccc\", -7 + 8)"))
     print(SgExpression.EvaluateExpression(table, u"MAX(a)"))
     print(SgExpression.EvaluateExpression(table, u"a LIKE \"ttt\""))
     print("---")
