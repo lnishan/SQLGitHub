@@ -101,7 +101,7 @@ class SgExpression:
             for i in range(rows):
                 res = opds[i][-2] - opds[i][-1]
                 opds[i] = opds[i][:-2] + [res]
-        elif opr == u"==":
+        elif opr == u"==":  # shouldn't work with None but it does now
             for i in range(rows):
                 res = opds[i][-2] == opds[i][-1]
                 opds[i] = opds[i][:-2] + [res]
@@ -128,6 +128,10 @@ class SgExpression:
         elif opr == u"!=":
             for i in range(rows):
                 res = opds[i][-2] != opds[i][-1]
+                opds[i] = opds[i][:-2] + [res]
+        elif opr == u"is":
+            for i in range(rows):
+                res = opds[i][-2] == opds[i][-1]
                 opds[i] = opds[i][:-2] + [res]
 
     @staticmethod
