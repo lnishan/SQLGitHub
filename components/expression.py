@@ -54,8 +54,8 @@ class SgExpression:
     # (?:something) means a non-capturing group
     # Matches anything word that isn't prefixed with a '"' (not a string literal) and postfixed with a '(' (not a function name)
     # Adding a non-alpha character as matching prefix/postfix to prevent cases like 'www(' having a match 'ww'
-    _TOKEN_BODY = r"([\w_]+)"
-    _TOKEN_POST = r"(?:[^\(\w_]|$)"
+    _TOKEN_BODY = r"([a-zA-Z_]+)"
+    _TOKEN_POST = r"(?:[^\(a-zA-Z_]|$)"
     _TOKEN_REGEX = _TOKEN_BODY + _TOKEN_POST
 
     @staticmethod
