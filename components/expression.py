@@ -265,6 +265,19 @@ class SgExpression:
         SgExpression._EvaluateOperator(opds, oprs)  # opr = None
         return [row[0] for row in opds]
 
+    @staticmethod
+    def EvaluateExpressions(table, exprs):
+        ret = tb.SgTable()
+        ret.SetFields(exprs)
+        rows = len(table)
+        for _ in range(rows):
+            ret.Append([])
+        for expr in exprs:
+            res = SgExpression.EvaluateExpression(table, expr)
+            for i, val in enumerate(res):
+                # TODO(lnishan): Fix the cheat here.
+                ret._table[i].append(val)
+        return ret
 
     # TODO(lnishan): Add EvaluateExpressinInTable and make it a recursive function to correctly handle functions.
     @staticmethod

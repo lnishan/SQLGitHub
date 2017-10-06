@@ -35,4 +35,5 @@ class SgSession:
                     filtered_table.Append(row)
         else:
             filtered_table = source_table
-        return expression.SgExpression.EvaluateExpressionsInTable(filtered_table, self._field_exprs)
+        # return expression.SgExpression.EvaluateExpressionsInTable(filtered_table, self._field_exprs)
+        return expression.SgExpression.EvaluateExpressions(filtered_table, self._field_exprs)
