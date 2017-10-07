@@ -9,10 +9,6 @@ Sample Usage:
     table.Append([2, 4, 6, u"BB"])
     table.Append([3, 6, 9, u"CCC"])
     table.Append([4, 8, 12, u"ABC"])
-    print(SgExpression.EvaluateExpression(table, u"CONCAT(\"a\", c, \"ccc\", -7 + 8)"))
-    print(SgExpression.EvaluateExpression(table, u"MAX(a)"))
-    print(SgExpression.EvaluateExpression(table, u"a LIKE \"ttt\""))
-    print("---")
     print(SgExpression.EvaluateExpression(table, u"a * (b - a_b)"))
     print(SgExpression.EvaluateExpression(table, u"MIN(a * (b - a_b))"))
     print(SgExpression.EvaluateExpression(table, u"MAX(a * (b - a_b))"))
@@ -40,11 +36,16 @@ Sample Usage:
     print(SgExpression.EvaluateExpression(table, "not a + 2 >= b"))
     print(SgExpression.EvaluateExpression(table, "not a + 2 >= b and a_b > 10"))
     print(SgExpression.EvaluateExpression(table, "b < 5 || a_b > 10"))
+    print("---")
+    print(SgExpression.EvaluateExpression(table, "sum(a + b)"))
+    print(SgExpression.EvaluateExpression(table, "avg(a * a)"))
+    print(SgExpression.EvaluateExpression(table, u"CONCAT(\"a\", c, \"ccc\", -7 + 8)"))
 """
 
 import re
 
 import definition as df
+import utilities as util
 import table as tb
 
 
@@ -198,6 +199,26 @@ class SgExpression:
             res = []
             for i in range(rows):
                 res.append(mn)
+            return res
+        elif func == "sum":
+            sm = sum(row[-1] for row in opds)
+            res = []
+            for i in range(rows):
+                res.append(sm)
+            return res
+        elif func == "avg":
+            avg = sum(row[-1] for row in opds) / float(rows)
+            res = []
+            for i in range(rows):
+                res.append(avg)
+            return res
+        elif func == "concat":
+            res = []
+            for row in opds:
+                cstr = u""
+                for val in row[-1]:
+                    cstr += util.GuaranteeUnicode(val)
+                res.append(cstr)
             return res
         else:
             res = [row[-1] for row in opds]
