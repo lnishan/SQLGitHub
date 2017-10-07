@@ -25,8 +25,31 @@ class SgParser:
         self._condition = None
 
     def _ParseSelect(self, sub_tokens):
-        sub_tokens_str = u"".join(sub_tokens)
-        self._field_exprs = sub_tokens_str.split(",")
+        sub_tokens_str = u" ".join(sub_tokens)
+        in_string = False
+        in_bracket = False
+        expr = u""
+        for ch in sub_tokens_str:
+            if in_string:
+                expr += ch
+                if ch in (u"\'", u"\""):
+                    in_string = False
+            elif in_bracket:
+                expr += ch
+                if ch == u")":
+                    in_bracket = False
+            else:
+                if ch == u",":
+                    self._field_exprs.append(expr.strip())
+                    expr = u""
+                else:
+                    expr += ch
+                    if ch in (u"\'", u"\""):
+                        in_string = True
+                    elif ch == u"(":
+                        in_bracket = True
+        if expr:
+            self._field_exprs.append(expr.strip())
 
     def _ParseFrom(self, sub_tokens):
         # TODO(lnishan): Handle sub-queries (by creating another SgParser instance) here
