@@ -63,8 +63,8 @@ class SgExpression:
     def ExtractTokensFromExpressions(exprs):
         ret_set = set()
         for expr in exprs:
-            expr_rem = re.sub(r"\"[^\"]*\"", r"", expr)
-            expr_rem = re.sub(r"\'[^\']*\'", r"", expr_rem)  # string literal removed
+            expr_rem = re.sub(r"\"(?:[^\\\"]|\\.)*\"", r"", expr)
+            expr_rem = re.sub(r"\'(?:[^\\\']|\\.)*\'", r"", expr_rem)  # string literals removed
             for token in re.findall(SgExpression._TOKEN_REGEX, expr_rem):
                 if not token in df.ALL_TOKENS:
                     ret_set.add(token)
