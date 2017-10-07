@@ -28,11 +28,16 @@ class SgParser:
         sub_tokens_str = u" ".join(sub_tokens)
         in_string = False
         in_bracket = False
+        is_escaping = False
         expr = u""
         for ch in sub_tokens_str:
             if in_string:
                 expr += ch
-                if ch in (u"\'", u"\""):
+                if is_escaping:
+                    is_escaping = False
+                elif ch == "\\":
+                    is_escaping = True
+                elif ch in (u"\'", u"\""):
                     in_string = False
             elif in_bracket:
                 expr += ch
@@ -46,6 +51,7 @@ class SgParser:
                     expr += ch
                     if ch in (u"\'", u"\""):
                         in_string = True
+                        is_escaping = False
                     elif ch == u"(":
                         in_bracket = True
         if expr:

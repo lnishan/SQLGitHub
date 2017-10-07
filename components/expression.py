@@ -276,11 +276,18 @@ class SgExpression:
             opds.append([])
         reading = None  # None = nothing, 0 = operator, 1 = field tokens (can be operator too), 2 = number, 3 = string
         is_start = True
+        is_escaping = False
         token = u""
         expr += u" "  # add a terminating character (to end token parsing)
         for ch in expr:
             if reading == 3:  # string
-                if ch in (u"\"", u"\'"):
+                if is_escaping:
+                    # unescape characters
+                    token += util.Unescape(ch)
+                    is_escaping = False
+                elif ch == "\\":
+                    is_escaping = True
+                elif ch in (u"\"", u"\'"):
                     for i in range(rows):
                         opds[i].append(token)
                     token = u""
