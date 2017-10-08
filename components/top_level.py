@@ -7,7 +7,7 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.contrib.completers import WordCompleter
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.styles import style_from_pygments
-from pygments.lexers.sql import SqlLexer
+from pygments.lexers.sql import MySqlLexer
 from pygments.styles.monokai import MonokaiStyle
 
 import definition
@@ -58,7 +58,7 @@ class SQLGitHub:
                          history=FileHistory("history.txt"),
                          auto_suggest=AutoSuggestFromHistory(),
                          completer=self._completer,
-                         lexer=SqlLexer,
+                         lexer=MySqlLexer,
                          style=self._style,
                          on_abort=AbortAction.RETRY)
             if sql.lower() in definition.EXIT_TOKENS:
