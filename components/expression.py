@@ -29,6 +29,9 @@ Sample Usage:
     print(SgExpression.EvaluateExpression(table, u"c like \"%A\""))
     print(SgExpression.EvaluateExpression(table, u"c like \"C_C\""))
     print(SgExpression.EvaluateExpression(table, u"c like \"A\""))
+    print(SgExpression.EvaluateExpression(table, "\"%%%\" like \"\\%_\\%\""))
+    print(SgExpression.EvaluateExpression(table, "\"a%%\" like \"\\%_\\%\""))
+    print(SgExpression.EvaluateExpression(table, "\"%a%\" like \"\\%_\\%\""))
     print(SgExpression.EvaluateExpression(table, u"c regexp \"B*\""))
     print(SgExpression.EvaluateExpression(table, u"c regexp \"[B-C]*\""))
     print(SgExpression.EvaluateExpression(table, u"\"BB\" in (\"A\", \"B\", c)"))
@@ -148,9 +151,15 @@ class SgExpression:
                 opds[i] = opds[i][:-2] + [res]
         elif opr == u"like":
             for i in range(rows):
+                is_escaping = False
                 regex = r""
                 for ch in opds[i][-1]:
-                    if ch == "%":
+                    if is_escaping:  # \% \_
+                        regex += ch
+                        is_escaping = False
+                    elif ch == "\\":
+                        is_escaping = True
+                    elif ch == "%":
                         regex += ".*"
                     elif ch == "_":
                         regex += "."
