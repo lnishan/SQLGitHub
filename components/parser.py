@@ -5,6 +5,7 @@ Sample Usage:
     parser = SgParser(g)
     s = parser.Parse(["select", "name,", "description", "from", "abseil.repos"])
     print(s.Execute())
+    print(parser._ParseOrder(["by", "a+b", "DESC,", "c", "-", "b", "ASC", ",", "a%b"]))
 """
 
 import definition
@@ -20,17 +21,18 @@ class SgParser:
         self._Initialize()
 
     def _Initialize(self):
-        self._field_exprs = []
+        self._field_exprs = None
         self._source = None
         self._condition = None
+        self._orders = None
 
-    def _ParseSelect(self, sub_tokens):
-        sub_tokens_str = u" ".join(sub_tokens)
+    def __GetCommaSeparatedExprs(self, tokens_str):
+        exprs = []
         in_string = False
         in_bracket = False
         is_escaping = False
         expr = u""
-        for ch in sub_tokens_str:
+        for ch in tokens_str:
             if in_string:
                 expr += ch
                 if is_escaping:
@@ -45,7 +47,7 @@ class SgParser:
                     in_bracket = False
             else:
                 if ch == u",":
-                    self._field_exprs.append(expr.strip())
+                    exprs.append(expr.strip())
                     expr = u""
                 else:
                     expr += ch
@@ -55,7 +57,12 @@ class SgParser:
                     elif ch == u"(":
                         in_bracket = True
         if expr:
-            self._field_exprs.append(expr.strip())
+            exprs.append(expr.strip())
+        return exprs
+
+    def _ParseSelect(self, sub_tokens):
+        sub_tokens_str = u" ".join(sub_tokens)
+        self._field_exprs = self.__GetCommaSeparatedExprs(sub_tokens_str)
 
     def _ParseFrom(self, sub_tokens):
         # TODO(lnishan): Handle sub-queries (by creating another SgParser instance) here
@@ -66,6 +73,21 @@ class SgParser:
 
     def _ParseGroup(self, sub_tokens):
         pass
+
+    def _ParseOrder(self, sub_tokens):
+        self._orders = [[], []]
+        sub_tokens_str = u" ".join(sub_tokens[1:])  # get rid of "by"
+        raw_exprs = self.__GetCommaSeparatedExprs(sub_tokens_str)
+        for raw_expr in raw_exprs:
+            if raw_expr.lower().endswith(u" asc"):
+                self._orders[0].append(raw_expr[:-4])
+                self._orders[1].append(1)
+            elif raw_expr.lower().endswith(u" desc"):
+                self._orders[0].append(raw_expr[:-5])
+                self._orders[1].append(-1)
+            else:
+                self._orders[0].append(raw_expr)
+                self._orders[1].append(1)
 
     def _ParseCmdToken(self, cmd_token, sub_tokens):
         if cmd_token == u"select":
@@ -97,4 +119,4 @@ class SgParser:
             self._ParseCmdToken(cmd_token, sub_tokens)
         if not self._field_exprs or not self._source:
             raise SyntaxError("SQL syntax incorrect.")
-        return session.SgSession(self._github, self._field_exprs, self._source, self._condition)
+        return session.SgSession(self._github, self._field_exprs, self._source, self._condition, self._orders)

@@ -67,3 +67,10 @@ class SgTable:
 
     def SetFields(self, fields):
         self._fields = fields
+    
+    def SliceCol(self, start, end):
+        table = SgTable()
+        table.SetFields(self._fields[start:end])
+        for row in self._table:
+            table.Append(row[start:end])
+        return table
