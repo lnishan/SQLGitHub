@@ -37,7 +37,7 @@ class SgSession:
         if self._condition:
             filtered_table = tb.SgTable()
             filtered_table.SetFields(source_table.GetFields())
-            meets = expression.SgExpression.EvaluateExpression(source_table, self._condition)
+            meets = SgExpression.EvaluateExpression(source_table, self._condition)
             for i, row in enumerate(source_table):
                 if meets[i]:
                     filtered_table.Append(row)
