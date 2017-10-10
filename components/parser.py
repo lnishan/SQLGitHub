@@ -29,7 +29,7 @@ class SgParser:
     def __GetCommaSeparatedExprs(self, tokens_str):
         exprs = []
         in_string = False
-        in_bracket = False
+        bracket_sum = 0
         is_escaping = False
         expr = u""
         for ch in tokens_str:
@@ -41,10 +41,14 @@ class SgParser:
                     is_escaping = True
                 elif ch in (u"\'", u"\""):
                     in_string = False
-            elif in_bracket:
+            elif bracket_sum > 0:
                 expr += ch
-                if ch == u")":
-                    in_bracket = False
+                if ch == "\"":
+                    in_string = True
+                elif ch == u"(":
+                    bracket_sum = bracket_sum + 1
+                elif ch == u")":  # and not in_string
+                    bracket_sum = bracket_sum - 1
             else:
                 if ch == u",":
                     exprs.append(expr.strip())
@@ -55,7 +59,7 @@ class SgParser:
                         in_string = True
                         is_escaping = False
                     elif ch == u"(":
-                        in_bracket = True
+                        bracket_sum = 1
         if expr:
             exprs.append(expr.strip())
         return exprs

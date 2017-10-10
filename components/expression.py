@@ -56,8 +56,8 @@ class SgExpression:
     """A set of utility functions to evaluate expressions."""
 
     # (?:something) means a non-capturing group
-    # Matches anything word that isn't prefixed with a '"' (not a string literal) and postfixed with a '(' (not a function name)
-    # Adding a non-alpha character as matching prefix/postfix to prevent cases like 'www(' having a match 'ww'
+    # Matches anything word that isn't postfixed with a '(' (not a function name)
+    # Adding a non-alpha character as matching postfix to prevent cases like 'www(' having a match 'ww'
     _TOKEN_BODY = r"([a-zA-Z_]+)"
     _TOKEN_POST = r"(?:[^\(a-zA-Z_]|$)"
     _TOKEN_REGEX = _TOKEN_BODY + _TOKEN_POST
@@ -117,7 +117,7 @@ class SgExpression:
             for i in range(rows):
                 res = opds[i][-2] - opds[i][-1]
                 opds[i] = opds[i][:-2] + [res]
-        elif opr == u"==":  # shouldn't work with None but it does now
+        elif opr == u"==":  # shouldn't work with None but it does atm
             for i in range(rows):
                 res = opds[i][-2] == opds[i][-1]
                 opds[i] = opds[i][:-2] + [res]
@@ -195,7 +195,6 @@ class SgExpression:
 
     @staticmethod
     def _EvaluateFunction(opds, func):
-        # print(opds, func)
         rows = len(opds)
         if func == "max":
             mx = max(row[-1] for row in opds)
@@ -399,7 +398,6 @@ class SgExpression:
                     elif SgExpression._IsOperatorCharacter(ch):
                         reading = 0
                     is_start = False
-            # print(opds, oprs)
         SgExpression._EvaluateOperator(opds, oprs)  # opr = None
         return [row[0] for row in opds]
 
