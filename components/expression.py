@@ -311,10 +311,10 @@ class SgExpression:
                         opds[i].append(num)
                     token = u""
                     if SgExpression._IsOperatorCharacter(ch):
-                        if ch == ",":
-                            is_start = True
                         reading = 0
                         token = ch
+                        if ch in (u"(", u","):
+                            is_start = True
                     else:
                         reading = None
             elif reading == 1:
@@ -337,6 +337,8 @@ class SgExpression:
                                 reading = 1
                             elif SgExpression._IsOperatorCharacter(ch):
                                 reading = 0
+                                if ch in (u"(", u","):
+                                    is_start = True
                     elif ch == u"(":  # function
                         oprs.append(token)
                         oprs.append(ch)
@@ -349,10 +351,10 @@ class SgExpression:
                             opds[i].append(vals[i])
                         token = u""
                         if SgExpression._IsOperatorCharacter(ch):
-                            if ch == ",":
-                                is_start = True
                             reading = 0
                             token = ch
+                            if ch in (u"(", u","):
+                                is_start = True
                         else:
                             reading = None
             elif reading == 0:
