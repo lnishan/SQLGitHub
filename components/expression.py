@@ -311,6 +311,8 @@ class SgExpression:
                         opds[i].append(num)
                     token = u""
                     if SgExpression._IsOperatorCharacter(ch):
+                        if ch == ",":
+                            is_start = True
                         reading = 0
                         token = ch
                     else:
@@ -347,6 +349,8 @@ class SgExpression:
                             opds[i].append(vals[i])
                         token = u""
                         if SgExpression._IsOperatorCharacter(ch):
+                            if ch == ",":
+                                is_start = True
                             reading = 0
                             token = ch
                         else:
@@ -358,6 +362,8 @@ class SgExpression:
                     is_opr = False  # just to terminate the current segment
                 elif token == u"(":
                     is_opr = False
+                elif token == u",":
+                    is_opr = False
                 elif token.isalpha():
                     is_opr = ch.isalpha()
                 else:
@@ -367,8 +373,6 @@ class SgExpression:
                     token += ch
                 else:
                     SgExpression._ProcessOperator(is_start, opds, oprs, token)
-                    if token == ",":
-                        is_start = True
                     token = u""
                     if ch.isspace():
                         reading = None
@@ -377,12 +381,15 @@ class SgExpression:
                         if ch in (u"\"", "\'"):
                             reading = 3
                             token = u""
-                        elif SgExpression._IsNumericCharacter(ch):
+                        elif SgExpression._IsNumericCharacter(ch) or (ch == u"-" and is_start):
                             reading = 2
                         elif SgExpression._IsFieldTokenCharacter(ch):
                             reading = 1
                         elif SgExpression._IsOperatorCharacter(ch):
                             reading = 0
+                            if ch in (u"(", u","):
+                                is_start = True
+
             else:  # None
                 if ch.isspace():
                     reading = None
@@ -397,7 +404,7 @@ class SgExpression:
                         reading = 1
                     elif SgExpression._IsOperatorCharacter(ch):
                         reading = 0
-                    is_start = False
+                    is_start = ch in (u"(", u",")
         SgExpression._EvaluateOperator(opds, oprs)  # opr = None
         return [row[0] for row in opds]
 
