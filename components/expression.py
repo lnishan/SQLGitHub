@@ -389,8 +389,7 @@ class SgExpression:
                             reading = 1
                         elif SgExpression._IsOperatorCharacter(ch):
                             reading = 0
-                            if ch in (u"(", u","):
-                                is_start = True
+                        is_start = ch in (u"(", u",")
 
             else:  # None
                 if ch.isspace():
