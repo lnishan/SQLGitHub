@@ -45,14 +45,16 @@ class SgSession:
         else:
             filtered_table = source_table
         
-        # evaluate select (and order by)
+        # evaluate all necessary expressions
+        eval_exprs = self._field_exprs
         if self._orders:
-            eval_exprs = self._field_exprs + self._orders[0]
-            res_table = SgExpression.EvaluateExpressions(filtered_table, eval_exprs)
+            eval_exprs += self._orders[0]
+        res_table = SgExpression.EvaluateExpressions(filtered_table, eval_exprs)
+
+        # sort and remove columns for sorting
+        if self._orders:
             ordering = SgOrdering(res_table, self._orders[1])
             res_table = ordering.Sort(0, len(res_table)-1).SliceCol(0, len(self._field_exprs))
-        else:
-            res_table = SgExpression.EvaluateExpressions(filtered_table, self._field_exprs)
 
         # check if all tokens in expressions are contained in aggregate functions
         if SgExpression.IsAllTokensInAggregate(self._field_exprs):
