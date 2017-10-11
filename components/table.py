@@ -14,6 +14,9 @@ Sample Usage:
     print(table.GetVals("a"))
     print(table.GetVals("b"))
     print(table.GetVals("c"))
+    print(table[1:])
+    print(table[:2])
+    print(table[0:2:2])
 """
 
 
@@ -32,10 +35,13 @@ class SgTable:
             yield row
 
     def __getitem__(self, key):
-        if not ((type(key) == int or type(key) == long) and key >= 0 and key < len(self._table)):
-            raise ValueError("Index illegal")
+        if isinstance(key, slice):
+            return self._table[key.start:key.stop:key.step]
         else:
-            return self._table[key]
+            if not ((type(key) == int or type(key) == long) and key >= 0 and key < len(self._table)):
+                raise ValueError("Index illegal")
+            else:
+                return self._table[key]
 
     def __setitem__(self, key, value):
         if not ((type(key) == int or type(key) == long) and key >= 0 and key < len(self._table)):
