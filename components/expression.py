@@ -215,6 +215,7 @@ class SgExpression:
 
     @staticmethod
     def _EvaluateFunction(opds, func):
+        # TODO(lnishan): Add new function names to definitions.py
         rows = len(opds)
         if func == "max":
             mx = max(row[-1] for row in opds)

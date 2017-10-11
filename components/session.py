@@ -34,6 +34,7 @@ class SgSession:
         # source is either a label (eg. "google.issues") or a SgSession
         source_table = self._source.Execute() if isinstance(self._source, SgSession) else self._fetcher.Fetch(self._source)
 
+        # evaluate where
         if self._condition:
             filtered_table = tb.SgTable()
             filtered_table.SetFields(source_table.GetFields())
@@ -44,6 +45,7 @@ class SgSession:
         else:
             filtered_table = source_table
         
+        # evaluate select (and order by)
         if self._orders:
             eval_exprs = self._field_exprs + self._orders[0]
             res_table = SgExpression.EvaluateExpressions(filtered_table, eval_exprs)
@@ -51,5 +53,9 @@ class SgSession:
             res_table = ordering.Sort(0, len(res_table)-1).SliceCol(0, len(self._field_exprs))
         else:
             res_table = SgExpression.EvaluateExpressions(filtered_table, self._field_exprs)
+
+        # check if all tokens in expressions are contained in aggregate functions
+        if SgExpression.IsAllTokensInAggregate(self._field_exprs):
+            res_table = res_table[0]
 
         return res_table
