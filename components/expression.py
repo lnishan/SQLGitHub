@@ -241,6 +241,11 @@ class SgExpression:
             for i in range(rows):
                 res.append(avg)
             return res
+        elif func == "count":
+            res = []
+            for i in range(rows):
+                res.append(rows)
+            return res
         elif func == "concat":
             res = []
             for row in opds:

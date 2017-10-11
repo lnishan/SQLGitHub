@@ -24,7 +24,7 @@ OPERATOR_TOKENS = [u"interval",
                    u"(",
                    u")"]
 
-AGGREGATE_FUNCTIONS = ["max", "min", "sum", "avg"]
+AGGREGATE_FUNCTIONS = ["max", "min", "sum", "avg", "count"]
 HORIZONTAL_FUNCTIONS = ["concat"]
 
 ALL_TOKENS = (EXIT_TOKENS +
