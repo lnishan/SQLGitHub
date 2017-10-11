@@ -24,7 +24,14 @@ OPERATOR_TOKENS = [u"interval",
                    u"(",
                    u")"]
 
-ALL_TOKENS = EXIT_TOKENS + COMMAND_TOKENS + OPERATOR_TOKENS
+AGGREGATE_FUNCTIONS = ["max", "min", "sum", "avg"]
+HORIZONTAL_FUNCTIONS = ["concat"]
+
+ALL_TOKENS = (EXIT_TOKENS +
+              COMMAND_TOKENS +
+              OPERATOR_TOKENS +
+              AGGREGATE_FUNCTIONS +
+              HORIZONTAL_FUNCTIONS)
 
 
 PRECEDENCE = {
