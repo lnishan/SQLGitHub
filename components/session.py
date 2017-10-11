@@ -46,7 +46,7 @@ class SgSession:
             filtered_table = source_table
         
         # evaluate all necessary expressions
-        eval_exprs = self._field_exprs
+        eval_exprs = self._field_exprs[:]
         if self._orders:
             eval_exprs += self._orders[0]
         res_table = SgExpression.EvaluateExpressions(filtered_table, eval_exprs)
