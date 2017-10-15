@@ -84,3 +84,11 @@ class SgTable:
         for row in self._table:
             table.Append(row[start:end])
         return table
+
+    def Chain(self, table):
+        res_table = SgTable()
+        res_table.SetFields(self._fields + table.GetFields())
+        rows = min(len(self._table), len(table))
+        for i in range(rows):
+            res_table.Append(self._table[i] + table[i])
+        return res_table

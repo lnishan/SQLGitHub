@@ -11,6 +11,7 @@ import table_fetcher
 from expression import SgExpression
 from grouping import SgGrouping
 from ordering import SgOrdering
+from ordering import SgTableOrdering
 
 
 # TODO(lnishan): Change it to SgSessionSimple and add SgSession to handle unions and joins.
@@ -50,9 +51,11 @@ class SgSession:
             filtered_table = source_table
         
         # evaluate all necessary expressions
-        eval_exprs = SgExpression.ExtractTokensFromExpressions(self._field_exprs[:])
+        select_tokens = SgExpression.ExtractTokensFromExpressions(self._field_exprs[:]) 
+        eval_exprs = select_tokens
         if self._orders:
-            eval_exprs += self._orders[0]
+            order_tokens = SgExpression.ExtractTokensFromExpressions(self._orders[0])
+            eval_exprs += order_tokens
         if self._groups:  # in reversed order because we process from the rightmost item first
             eval_exprs += self._groups
         res_table = SgExpression.EvaluateExpressions(filtered_table, eval_exprs)
@@ -65,8 +68,11 @@ class SgSession:
         # order by
         if self._orders:
             for table in res_tables:
+                table.Copy(table.SliceCol(0, len(table.GetFields()) - len(order_tokens)).Chain(SgExpression.EvaluateExpressions(table, self._orders[0])))
                 ordering = SgOrdering(table, self._orders[1])
-                table.Copy(ordering.Sort())
+                table.Copy(ordering.Sort(keep_order_fields=True))
+            ordering = SgTableOrdering(res_tables, self._orders[1])
+            res_tables = ordering.Sort()
 
         # TODO(lnishan): Support having here
 

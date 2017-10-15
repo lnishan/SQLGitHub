@@ -40,9 +40,10 @@ class SQLGitHub:
         except SyntaxError:
             sys.stderr.write("SQL syntax incorrect.\n")
         else:
-            result = session.Execute()
-            if False:
-                pass
+            try:
+                result = session.Execute()
+            except AttributeError:
+                sys.stderr.write("One or more of the specified fields doesn't exist.\n")
             else:
                 print(result)
                 print("-")
