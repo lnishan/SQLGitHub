@@ -14,6 +14,7 @@ Sample Usage:
 import datetime
 import inspect
 
+from github.GitAuthor import GitAuthor
 from github.NamedUser import NamedUser
 
 import table as tb
@@ -46,6 +47,8 @@ class SgTableFetcher:
     def __ConvertVal(self, val):
         if isinstance(val, NamedUser):
             return val.login
+        elif isinstance(val, GitAuthor):
+            return val.name
         else:
             return val
 
@@ -97,7 +100,7 @@ class SgTableFetcher:
                     if not ret.GetFields():
                         ret.SetFields(self._GetKeys(pull))
                     ret.Append(self._GetVals(pull))
-        elif sub_name == "commits":
+        elif sub_name == u"commits":
             days = None
             if add_info:
                 for info in add_info:
@@ -107,7 +110,9 @@ class SgTableFetcher:
             for repo in repos:
                 commits = repo.get_commits(since=datetime.datetime.now() - datetime.timedelta(days=days)) if days else repo.get_commits()
                 for commit in commits:
+                    git_commit = commit.commit
+                    setattr(git_commit, u"login", commit.author.login if commit.author else None)
                     if not ret.GetFields():
-                        ret.SetFields(self._GetKeys(commit))
-                    ret.Append(self._GetVals(commit))
+                        ret.SetFields(self._GetKeys(git_commit))
+                    ret.Append(self._GetVals(git_commit))
         return ret
