@@ -26,6 +26,7 @@ class SgParser:
         self._condition = None
         self._groups = None
         self._orders = None
+        self._limit = None
 
     def __GetCommaSeparatedExprs(self, tokens_str):
         exprs = []
@@ -95,6 +96,9 @@ class SgParser:
                 self._orders[0].append(raw_expr)
                 self._orders[1].append(1)
 
+    def _ParseLimit(self, sub_tokens):
+        self._limit = int(sub_tokens[0])
+
     def _ParseCmdToken(self, cmd_token, sub_tokens):
         if cmd_token == u"select":
             self._ParseSelect(sub_tokens)
@@ -106,6 +110,8 @@ class SgParser:
             self._ParseGroup(sub_tokens)
         elif cmd_token == u"order":
             self._ParseOrder(sub_tokens)
+        elif cmd_token == u"limit":
+            self._ParseLimit(sub_tokens)
         else:
             raise NotImplementedError("Command token not implemented.")
     
@@ -125,4 +131,4 @@ class SgParser:
             self._ParseCmdToken(cmd_token, sub_tokens)
         if not self._field_exprs or not self._source:
             raise SyntaxError("SQL syntax incorrect.")
-        return session.SgSession(self._github, self._field_exprs, self._source, self._condition, self._groups, self._orders)
+        return session.SgSession(self._github, self._field_exprs, self._source, self._condition, self._groups, self._orders, self._limit)

@@ -18,12 +18,13 @@ from ordering import SgTableOrdering
 class SgSession:
     """A class for SQLGitHub sessions."""
 
-    def __init__(self, github, field_exprs, source, condition=None, groups=None, orders=None):
+    def __init__(self, github, field_exprs, source, condition=None, groups=None, orders=None, limit=None):
         self._field_exprs = field_exprs
         self._source = source
         self._condition = condition
         self._groups = groups
         self._orders = orders
+        self._limit = limit
 
         rel_keys = SgExpression.ExtractTokensFromExpressions(self._field_exprs)
         if self._condition:
@@ -91,5 +92,9 @@ class SgSession:
         for table in res_tables:
             for row in table:
                 merged_table.Append(row)
+
+        # process limit
+        if self._limit:
+            merged_table.SetTable(merged_table[:self._limit])
 
         return merged_table

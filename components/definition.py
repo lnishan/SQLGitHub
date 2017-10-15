@@ -1,8 +1,8 @@
 """Language definitions for SQLGitHub."""
 
 
+COMMAND_TOKENS = [u"select", u"from", u"where", u"group", u"order", u"limit"]
 EXIT_TOKENS = [u"exit", u"q"]
-COMMAND_TOKENS = [u"select", u"from", u"where", u"group", u"order"]
 OPERATOR_TOKENS = [u"interval",
                    u"binary", u"collate",
                    u"!",
@@ -27,8 +27,8 @@ OPERATOR_TOKENS = [u"interval",
 AGGREGATE_FUNCTIONS = ["max", "min", "sum", "avg", "count"]
 HORIZONTAL_FUNCTIONS = ["concat"]
 
-ALL_TOKENS = (EXIT_TOKENS +
-              COMMAND_TOKENS +
+ALL_TOKENS = (COMMAND_TOKENS +
+              EXIT_TOKENS +
               OPERATOR_TOKENS +
               AGGREGATE_FUNCTIONS +
               HORIZONTAL_FUNCTIONS)
