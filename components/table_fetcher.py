@@ -111,7 +111,10 @@ class SgTableFetcher:
                 commits = repo.get_commits(since=datetime.datetime.now() - datetime.timedelta(days=days)) if days else repo.get_commits()
                 for commit in commits:
                     git_commit = commit.commit
-                    setattr(git_commit, u"login", commit.author.login if commit.author else None)
+                    try:
+                        setattr(git_commit, u"login", commit.author.login if commit.author else None)
+                    except AttributeError:  # TODO(lnishan): unknown author, need to track down PyGithub bug
+                        setattr(git_commit, u"login", None)
                     if not ret.GetFields():
                         ret.SetFields(self._GetKeys(git_commit))
                     ret.Append(self._GetVals(git_commit))
