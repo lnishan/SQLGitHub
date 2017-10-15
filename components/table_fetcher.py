@@ -14,8 +14,10 @@ Sample Usage:
 import datetime
 import inspect
 
+from github.NamedUser import NamedUser
+
 import table as tb
-import utilities
+import utilities as util
 
 
 class SgTableFetcher:
@@ -41,11 +43,17 @@ class SgTableFetcher:
         else:
             return [unicode(key, "utf-8") for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
 
+    def __ConvertVal(self, val):
+        if isinstance(val, NamedUser):
+            return val.login
+        else:
+            return val
+
     def _GetVals(self, cls):
         if self._rel_keys:
-            return [getattr(cls, key) for key in self._rel_keys]
+            return [self.__ConvertVal(getattr(cls, key)) for key in self._rel_keys]
         else:
-            return [val for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
+            ret = [self.__ConvertVal(val) for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
     
     def Fetch(self, label):
         ret = tb.SgTable()
@@ -54,26 +62,52 @@ class SgTableFetcher:
         if sub_name == None:  # eg. "google"
             ret.SetFields(self._GetKeys(org))
             ret.Append(self._GetVals(org))
-        elif sub_name == "repos":
+        elif sub_name == u"repos":
             repos = org.get_repos()
             for repo in repos:
                 if not ret.GetFields():
                     ret.SetFields(self._GetKeys(repo))
                 ret.Append(self._GetVals(repo))
-        elif sub_name == "issues":
+        elif sub_name == u"issues":
             days = None
-            state = "open"
+            state = u"open"
             if add_info:
                 for info in add_info:
-                    if utilities.IsNumeric(info):
+                    if util.IsNumeric(info):
                         days = int(info)
-                    elif info in ["all", "open", "closed"]:
+                    elif info in (u"all", u"open", u"closed"):
                         state = info
             repos = org.get_repos()
             for repo in repos:
                 issues = repo.get_issues(state=state, since=datetime.datetime.now() - datetime.timedelta(days=days)) if days else repo.get_issues(state=state)
                 for issue in issues:
                     if not ret.GetFields():
-                        ret.SetFields(self._GetKeys(repo))
+                        ret.SetFields(self._GetKeys(issue))
                     ret.Append(self._GetVals(issue))
+        elif sub_name == u"pulls":
+            state = u"open"
+            if add_info:
+                for info in add_info:
+                    if info in (u"all", u"open", u"closed"):
+                        state = info
+            repos = org.get_repos()
+            for repo in repos:
+                pulls = repo.get_pulls(state=state)
+                for pull in pulls:
+                    if not ret.GetFields():
+                        ret.SetFields(self._GetKeys(pull))
+                    ret.Append(self._GetVals(pull))
+        elif sub_name == "commits":
+            days = None
+            if add_info:
+                for info in add_info:
+                    if util.IsNumeric(info):
+                        days = int(info)
+            repos = org.get_repos()
+            for repo in repos:
+                commits = repo.get_commits(since=datetime.datetime.now() - datetime.timedelta(days=days)) if days else repo.get_commits()
+                for commit in commits:
+                    if not ret.GetFields():
+                        ret.SetFields(self._GetKeys(commit))
+                    ret.Append(self._GetVals(commit))
         return ret
