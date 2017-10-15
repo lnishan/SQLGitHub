@@ -24,6 +24,7 @@ class SgParser:
         self._field_exprs = None
         self._source = None
         self._condition = None
+        self._groups = None
         self._orders = None
 
     def __GetCommaSeparatedExprs(self, tokens_str):
@@ -76,7 +77,8 @@ class SgParser:
         self._condition = u" ".join(sub_tokens)
 
     def _ParseGroup(self, sub_tokens):
-        pass
+        sub_tokens_str = u" ".join(sub_tokens[1:])  # get rid of "by"
+        self._groups = self.__GetCommaSeparatedExprs(sub_tokens_str)
 
     def _ParseOrder(self, sub_tokens):
         self._orders = [[], []]
@@ -123,4 +125,4 @@ class SgParser:
             self._ParseCmdToken(cmd_token, sub_tokens)
         if not self._field_exprs or not self._source:
             raise SyntaxError("SQL syntax incorrect.")
-        return session.SgSession(self._github, self._field_exprs, self._source, self._condition, self._orders)
+        return session.SgSession(self._github, self._field_exprs, self._source, self._condition, self._groups, self._orders)

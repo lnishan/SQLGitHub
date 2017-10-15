@@ -25,7 +25,7 @@ class SgOrdering:
                 return 1 * self._reverses[i]
         return 0
 
-    def Sort(self, low, high):
+    def _Sort(self, low, high):
         if (low >= high):
             return
         pivot = low + random.randrange(high - low + 1)
@@ -36,6 +36,9 @@ class SgOrdering:
                 self._Swap(it, i)
                 it = it + 1
         self._Swap(it, high)
-        self.Sort(low, it-1)
-        self.Sort(it+1, high)
-        return self._table
+        self._Sort(low, it-1)
+        self._Sort(it+1, high)
+
+    def Sort(self):
+        self._Sort(0, len(self._table)-1)
+        return self._table.SliceCol(0, len(self._table.GetFields()) - len(self._reverses))
