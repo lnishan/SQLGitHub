@@ -52,7 +52,7 @@ python SQLGitHub.py
 
 ## Sample Usage
 
-### Get name and description from all the repos in [abseil](https://github.com/abseil).
+### → Get name and description from all the repos in [abseil](https://github.com/abseil).
 
 ```sql
 select name, description from abseil.repos
@@ -60,7 +60,9 @@ select name, description from abseil.repos
 
 ![Screenshot1](https://i.imgur.com/OG5c2GS.png)
 
-### Get last-updated time and title of the issues closed in the past 3 days in [servo](https://github.com/servo) listed in descending order of last-updated time.
+---
+
+### → Get last-updated time and title of the issues closed in the past 3 days in [servo](https://github.com/servo) listed in descending order of last-updated time.
 
 ```sql
 select updated_at, title from servo.issues.closed.3 order by updated_at, desc
@@ -68,7 +70,9 @@ select updated_at, title from servo.issues.closed.3 order by updated_at, desc
 
 ![Screenshot2](https://i.imgur.com/nyXdiEh.png)
 
-### Get top 10 most-starred repositories in [servo](https://github.com/servo).
+---
+
+### → Get top 10 most-starred repositories in [servo](https://github.com/servo).
 
 ```sql
 select concat(concat("(", stargazers_count, ") ", name), ": ", description) from servo.repos order by stargazers_count desc, name limit 10
@@ -76,7 +80,9 @@ select concat(concat("(", stargazers_count, ") ", name), ": ", description) from
 
 ![Screenshot3](https://i.imgur.com/sl2Ztrp.png)
 
-### Get top 10 contributors in [servo](https://github.com/servo) for the past 7 days based on number of commits.
+---
+
+### → Get top 10 contributors in [servo](https://github.com/servo) for the past 7 days based on number of commits.
 
 ```sql
 select login, count(login) from servo.commits.7 group by login order by count(login) desc, login limit 10
