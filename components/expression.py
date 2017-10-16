@@ -386,11 +386,9 @@ class SgExpression:
             elif reading == 0:
                 if token == u"":
                     is_opr = True
-                elif token == u")":
+                elif token in (u"(", u")", u",", u"+", u"-", u"*", u"/", u"%"):
                     is_opr = False  # just to terminate the current segment
-                elif token == u"(":
-                    is_opr = False
-                elif token == u",":
+                elif token and ch == u"(":  # r".+\(" cannot be an operator
                     is_opr = False
                 elif token.isalpha():
                     is_opr = ch.isalpha()
