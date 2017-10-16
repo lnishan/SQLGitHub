@@ -36,9 +36,16 @@ class SgSession:
         rel_keys = list(set(rel_keys))
         self._fetcher = table_fetcher.SgTableFetcher(github, rel_keys)
 
+    def _GetEmptyTable(self):
+        table = tb.SgTable()
+        table.SetFields(self._field_exprs)
+        return table
+
     def Execute(self):
         # source is either a label (eg. "google.issues") or a SgSession
         source_table = self._source.Execute() if isinstance(self._source, SgSession) else self._fetcher.Fetch(self._source)
+        if not source_table[:]:
+            return self._GetEmptyTable()
 
         # evaluate where
         if self._condition:
@@ -50,6 +57,8 @@ class SgSession:
                     filtered_table.Append(row)
         else:
             filtered_table = source_table
+        if not filtered_table[:]:
+            return self._GetEmptyTable()
         
         # evaluate all necessary expressions
         select_tokens = SgExpression.ExtractTokensFromExpressions(self._field_exprs[:]) 
