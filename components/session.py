@@ -18,11 +18,12 @@ from ordering import SgTableOrdering
 class SgSession:
     """A class for SQLGitHub sessions."""
 
-    def __init__(self, github, field_exprs, source, condition=None, groups=None, orders=None, limit=None):
+    def __init__(self, github, field_exprs, source, condition=None, groups=None, having=None, orders=None, limit=None):
         self._field_exprs = field_exprs
         self._source = source
         self._condition = condition
         self._groups = groups
+        self._having = having
         self._orders = orders
         self._limit = limit
 
@@ -31,6 +32,8 @@ class SgSession:
             rel_keys += SgExpression.ExtractTokensFromExpressions([self._condition])
         if self._groups:
             rel_keys += SgExpression.ExtractTokensFromExpressions(self._groups)
+        if self._having:
+            rel_keys += SgExpression.ExtractTokensFromExpressions([self._having])
         if self._orders:
             rel_keys += SgExpression.ExtractTokensFromExpressions(self._orders[0])
         rel_keys = list(set(rel_keys))
@@ -61,12 +64,16 @@ class SgSession:
             return self._GetEmptyTable()
         
         # evaluate all necessary expressions
+        # in reversed order because we process from the rightmost item first
         select_tokens = SgExpression.ExtractTokensFromExpressions(self._field_exprs[:]) 
         eval_exprs = select_tokens
         if self._orders:
             order_tokens = SgExpression.ExtractTokensFromExpressions(self._orders[0])
             eval_exprs += order_tokens
-        if self._groups:  # in reversed order because we process from the rightmost item first
+        if self._having:
+            having_tokens = SgExpression.ExtractTokensFromExpressions([self._having])
+            eval_exprs += having_tokens
+        if self._groups:
             eval_exprs += self._groups
         res_table = SgExpression.EvaluateExpressions(filtered_table, eval_exprs)
 
@@ -75,6 +82,15 @@ class SgSession:
             res_tables = SgGrouping.GenerateGroups(res_table, self._groups)
         else:
             res_tables = [res_table]
+
+        # having
+        if self._having:
+            filtered_tables = []
+            for table in res_tables:
+                if all(SgExpression.EvaluateExpression(table, self._having)):
+                    filtered_tables.append(table.SliceCol(0, len(table.GetFields()) - len(having_tokens)))
+            res_tables = filtered_tables
+
         # order by
         if self._orders:
             for table in res_tables:

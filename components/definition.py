@@ -1,7 +1,7 @@
 """Language definitions for SQLGitHub."""
 
 
-COMMAND_TOKENS = [u"select", u"from", u"where", u"group", u"order", u"limit"]
+COMMAND_TOKENS = [u"select", u"from", u"where", u"group", u"having", u"order", u"limit"]
 EXIT_TOKENS = [u"exit", u"q"]
 OPERATOR_TOKENS = [u"interval",
                    u"binary", u"collate",

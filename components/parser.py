@@ -25,6 +25,7 @@ class SgParser:
         self._source = None
         self._condition = None
         self._groups = None
+        self._having = None
         self._orders = None
         self._limit = None
 
@@ -81,6 +82,9 @@ class SgParser:
         sub_tokens_str = u" ".join(sub_tokens[1:])  # get rid of "by"
         self._groups = self.__GetCommaSeparatedExprs(sub_tokens_str)
 
+    def _ParseHaving(self, sub_tokens):
+        self._having = u" ".join(sub_tokens)
+
     def _ParseOrder(self, sub_tokens):
         self._orders = [[], []]
         sub_tokens_str = u" ".join(sub_tokens[1:])  # get rid of "by"
@@ -108,6 +112,8 @@ class SgParser:
             self._ParseWhere(sub_tokens)
         elif cmd_token == u"group":
             self._ParseGroup(sub_tokens)
+        elif cmd_token == u"having":
+            self._ParseHaving(sub_tokens)
         elif cmd_token == u"order":
             self._ParseOrder(sub_tokens)
         elif cmd_token == u"limit":
@@ -131,4 +137,4 @@ class SgParser:
             self._ParseCmdToken(cmd_token, sub_tokens)
         if not self._field_exprs or not self._source:
             raise SyntaxError("SQL syntax incorrect.")
-        return session.SgSession(self._github, self._field_exprs, self._source, self._condition, self._groups, self._orders, self._limit)
+        return session.SgSession(self._github, self._field_exprs, self._source, self._condition, self._groups, self._having, self._orders, self._limit)
