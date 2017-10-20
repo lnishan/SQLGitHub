@@ -59,14 +59,19 @@ class SgTable:
 
     def __HasCommaOutOfString(self, val):
         in_string = False
+        is_escaping = False
         for ch in val:
             if in_string:
-                if ch == u"\"":
+                if is_escaping:
+                    is_escaping = False
+                elif ch == u"\\":
+                    is_escaping = True
+                elif ch in (u"\"", u"\'"):
                     in_string = False
             else:
                 if ch == u",":
                     return True
-                elif ch == u"\"":
+                elif ch in (u"\"", u"\'"):
                     in_string = True
         return False
 
