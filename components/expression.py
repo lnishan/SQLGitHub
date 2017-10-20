@@ -311,6 +311,7 @@ class SgExpression:
         reading = None  # None = nothing, 0 = operator, 1 = field tokens (can be operator too), 2 = number, 3 = string
         is_start = True
         is_escaping = False
+        string_ch = None
         token = u""
         expr += u" "  # add a terminating character (to end token parsing)
         for ch in expr:
@@ -321,10 +322,11 @@ class SgExpression:
                     is_escaping = False
                 elif ch == "\\":
                     is_escaping = True
-                elif ch in (u"\"", u"\'"):
+                elif ch == string_ch:
                     for i in range(rows):
                         opds[i].append(token)
                     token = u""
+                    string_ch = None
                     reading = None
                 else:
                     token += ch
@@ -357,6 +359,7 @@ class SgExpression:
                             if ch in (u"\"", "\'"):
                                 reading = 3
                                 token = u""
+                                string_ch = ch
                             elif SgExpression._IsNumericCharacter(ch):
                                 reading = 2
                             elif SgExpression._IsFieldTokenCharacter(ch):
@@ -407,6 +410,7 @@ class SgExpression:
                         if ch in (u"\"", "\'"):
                             reading = 3
                             token = u""
+                            string_ch = ch
                         elif SgExpression._IsNumericCharacter(ch) or (ch == u"-" and is_start):
                             reading = 2
                         elif SgExpression._IsFieldTokenCharacter(ch):
@@ -423,6 +427,7 @@ class SgExpression:
                     if ch in (u"\"", u"\'"):
                         reading = 3
                         token = u""
+                        string_ch = ch
                     elif SgExpression._IsNumericCharacter(ch) or (ch == u"-" and is_start):
                         reading = 2
                     elif SgExpression._IsFieldTokenCharacter(ch):
