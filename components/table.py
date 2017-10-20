@@ -19,6 +19,8 @@ Sample Usage:
     print(table[0:2:2])
 """
 
+import itertools
+
 
 class SgTable:
     """A class to store tables."""
@@ -53,6 +55,24 @@ class SgTable:
         ret = str(self._fields)
         for row in self._table:
             ret += "\n" + str(row)
+        return ret
+
+    def _GetCsvRepr(self, val):
+        if isinstance(val, list):
+            return u",".join(itertools.imap(self._GetCsvRepr, val))
+        else:
+            if isinstance(val, unicode):
+                if u"," in val:
+                    return u"\"" + val + u"\""
+                else:
+                    return val
+            else:
+                return unicode(str(val), "utf-8")
+
+    def InCsv(self):
+        ret = u",".join(self._fields)
+        for row in self._table:
+            ret += u"\n" + self._GetCsvRepr(row)
         return ret
 
     def GetVals(self, field):
