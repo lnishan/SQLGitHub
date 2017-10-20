@@ -14,8 +14,16 @@ Sample Usage:
 import datetime
 import inspect
 
+from github.Commit import Commit
+from github.File import File
 from github.GitAuthor import GitAuthor
+from github.Issue import Issue
+from github.Label import Label
 from github.NamedUser import NamedUser
+from github.Organization import Organization
+from github.PullRequest import PullRequest
+from github.PullRequestPart import PullRequestPart
+from github.Repository import Repository
 
 import table as tb
 import utilities as util
@@ -44,13 +52,36 @@ class SgTableFetcher:
         else:
             return [unicode(key, "utf-8") for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
 
-    def __ConvertVal(self, val):
-        if isinstance(val, NamedUser):
-            return val.login
-        elif isinstance(val, GitAuthor):
-            return val.name
+    def __ConvertNonList(self, non_list):
+        """Converting these values to make the field "queriable"."""
+        if isinstance(non_list, Organization):
+            return non_list.name
+        elif isinstance(non_list, Repository):
+            return non_list.name
+        elif isinstance(non_list, Issue):
+            return non_list.title
+        elif isinstance(non_list, PullRequest):
+            return non_list.title
+        elif isinstance(non_list, Commit):
+            return non_list.commit.message
+        elif isinstance(non_list, PullRequestPart):
+            return non_list.ref
+        elif isinstance(non_list, NamedUser):
+            return non_list.login
+        elif isinstance(non_list, GitAuthor):
+            return non_list.name
+        elif isinstance(non_list, Label):
+            return non_list.name
+        elif isinstance(non_list, File):
+            return non_list.filename
         else:
-            return val
+            return non_list
+
+    def __ConvertVal(self, val):
+        if isinstance(val, list):
+            return [self.__ConvertNonList(non_list) for non_list in val]
+        else:
+            return self.__ConvertNonList(val)
 
     def _GetVals(self, cls):
         if self._rel_keys:
