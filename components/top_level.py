@@ -28,7 +28,7 @@ class SQLGitHub:
                                         ignore_case=True)
         self._style = style_from_pygments(MonokaiStyle)
 
-    def Execute(self, sql, measure_time=True):
+    def Execute(self, sql, measure_time=True, display_result=True):
         if not sql:
             return
         if measure_time:
@@ -46,14 +46,18 @@ class SQLGitHub:
             except AttributeError:
                 sys.stderr.write("One or more of the specified fields doesn't exist.\n")
             else:
-                if self._output == "str":
-                    print(result)
-                elif self._output == "csv":
-                    print(result.InCsv())
-                print("-")
-                print("Total rows: %d" % (len(result)))
-                if measure_time:
-                    print("Total execution time: %.3fs" % (time.time() - start_time))
+                exec_time = time.time() - start_time
+                if display_result:
+                    if self._output == "str":
+                        print(result)
+                    elif self._output == "csv":
+                        print(result.InCsv())
+                    print("-")
+                    print("Total rows: %d" % (len(result)))
+                    if measure_time:
+                        print("Total execution time: %.3fs"% (exec_time))
+                else:
+                    return result, measure_time
         
 
     def Start(self):
