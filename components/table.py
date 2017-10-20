@@ -57,12 +57,25 @@ class SgTable:
             ret += "\n" + str(row)
         return ret
 
+    def __HasCommaOutOfString(self, val):
+        in_string = False
+        for ch in val:
+            if in_string:
+                if ch == u"\"":
+                    in_string = False
+            else:
+                if ch == u",":
+                    return True
+                elif ch == u"\"":
+                    in_string = True
+        return False
+
     def _GetCsvRepr(self, val):
         if isinstance(val, list):
             return u",".join(itertools.imap(self._GetCsvRepr, val))
         else:
             if isinstance(val, unicode):
-                if u"," in val:
+                if self.__HasCommaOutOfString(val):
                     return u"\"" + val + u"\""
                 else:
                     return val
@@ -70,7 +83,7 @@ class SgTable:
                 return unicode(str(val), "utf-8")
 
     def InCsv(self):
-        ret = u",".join(self._fields)
+        ret = self._GetCsvRepr(self._fields)
         for row in self._table:
             ret += u"\n" + self._GetCsvRepr(row)
         return ret
