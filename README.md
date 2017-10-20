@@ -20,7 +20,7 @@ sudo ./setup.py install
 
 3. Start SQLGitHub
 ```bash
-python SQLGitHub.py
+./SQLGitHub.py
 ```
 
 ## Sample Usage
@@ -75,6 +75,7 @@ SELECT
     [WHERE where_condition]
     [GROUP BY {col_name | expr}
       [ASC | DESC], ...]
+    [HAVING where_condition]
     [ORDER BY {col_name | expr | position}
       [ASC | DESC], ...]
     [LIMIT row_count]
