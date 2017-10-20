@@ -1,16 +1,10 @@
 #!/usr/bin/env python
 
+import config_loader
 from components import top_level
-
-try:
-    import config
-except ImportError:
-    token = None
-else:
-    token = config.token
 
 
 if __name__ == "__main__":
-    token = token or raw_input("Please enter your GitHub token (which can be obtained from https://github.com/settings/tokens):")
-    sqlserv = top_level.SQLGitHub(token)
+    token, output = config_loader.Load("config")
+    sqlserv = top_level.SQLGitHub(token, output)
     sqlserv.Start()

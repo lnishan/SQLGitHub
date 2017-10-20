@@ -20,8 +20,9 @@ class SQLGitHub:
 
     _PROMPT_STR = u"SQLGitHub> "
 
-    def __init__(self, token):
+    def __init__(self, token, output="str"):
         self._github = Github(token)
+        self._output = output
         self._parser = parser.SgParser(self._github)
         self._completer = WordCompleter(definition.ALL_TOKENS,
                                         ignore_case=True)
@@ -45,7 +46,10 @@ class SQLGitHub:
             except AttributeError:
                 sys.stderr.write("One or more of the specified fields doesn't exist.\n")
             else:
-                print(result)
+                if self._output == "str":
+                    print(result)
+                elif self._output == "csv":
+                    print(result.InCsv())
                 print("-")
                 print("Total rows: %d" % (len(result)))
                 if measure_time:
