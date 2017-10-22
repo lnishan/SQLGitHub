@@ -88,7 +88,7 @@ SELECT
     [GROUP BY {col_name | expr}
       [ASC | DESC], ...]
     [HAVING where_condition]
-    [ORDER BY {col_name | expr | position}
+    [ORDER BY {col_name | expr}
       [ASC | DESC], ...]
     [LIMIT row_count]
 ```
