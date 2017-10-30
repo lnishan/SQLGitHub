@@ -88,6 +88,44 @@ class SgTableFetcher:
             return [self.__ConvertVal(getattr(cls, key)) for key in self._rel_keys]
         else:
             ret = [self.__ConvertVal(val) for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
+
+    def _IsDateRange(self, info):
+        if not info:
+            return False
+        for ch in info:
+            if not (util.IsNumeric(ch) or ch == "-"):
+                return False
+        return True
+
+    def _ParseDateRange(self, info):
+        if "-" in info:
+            tmp = info.split("-")
+            days_start = int(tmp[0]) if tmp[0] else None
+            days_end = int(tmp[1]) if tmp[1] else None
+            if days_start and days_end and days_start < days_end:
+                days_start, days_end = days_end, days_start
+            return days_start, days_end
+        else:
+            return int(info), None
+
+    def _GetDatetimeDaysBefore(self, days):
+        return datetime.datetime.now() - datetime.timedelta(days=days)
+
+    def _ExecFuncByDateRange(self, func, days_start, days_end, **kwargs):
+        if days_start:
+            if days_end:
+                return func(since=self._GetDatetimeDaysBefore(days_start),
+                            until=self._GetDatetimeDaysBefore(days_end),
+                            **kwargs)
+            else:
+                return func(since=self._GetDatetimeDaysBefore(days_start),
+                            **kwargs)
+        else:
+            if days_end:
+                return func(until=self._GetDatetimeDaysBefore(days_end),
+                            **kwargs)
+            else:
+                return func(**kwargs)
     
     def Fetch(self, label):
         ret = tb.SgTable()
@@ -113,7 +151,7 @@ class SgTableFetcher:
                         state = info
             repos = org.get_repos()
             for repo in repos:
-                issues = repo.get_issues(state=state, since=datetime.datetime.now() - datetime.timedelta(days=days)) if days else repo.get_issues(state=state)
+                issues = repo.get_issues(state=state, since=self._GetDatetimeDaysBefore(days)) if days else repo.get_issues(state=state)
                 for issue in issues:
                     if not ret.GetFields():
                         ret.SetFields(self._GetKeys(issue))
@@ -132,14 +170,16 @@ class SgTableFetcher:
                         ret.SetFields(self._GetKeys(pull))
                     ret.Append(self._GetVals(pull))
         elif sub_name == u"commits":
-            days = None
+            days_start, days_end = None, None
             if add_info:
                 for info in add_info:
-                    if util.IsNumeric(info):
-                        days = int(info)
+                    if self._IsDateRange(info):
+                        days_start, days_end = self._ParseDateRange(info)
             repos = org.get_repos()
             for repo in repos:
-                commits = repo.get_commits(since=datetime.datetime.now() - datetime.timedelta(days=days)) if days else repo.get_commits()
+                commits = self._ExecFuncByDateRange(repo.get_commits,
+                                                    days_start, days_end)
+                # commits = repo.get_commits(since=datetime.datetime.now() - datetime.timedelta(days=days)) if days else repo.get_commits()
                 for commit in commits:
                     git_commit = commit.commit
                     try:
