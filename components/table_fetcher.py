@@ -179,7 +179,6 @@ class SgTableFetcher:
             for repo in repos:
                 commits = self._ExecFuncByDateRange(repo.get_commits,
                                                     days_start, days_end)
-                # commits = repo.get_commits(since=datetime.datetime.now() - datetime.timedelta(days=days)) if days else repo.get_commits()
                 for commit in commits:
                     git_commit = commit.commit
                     try:
