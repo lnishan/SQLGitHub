@@ -80,7 +80,7 @@ class SgTable:
             return u",".join(itertools.imap(self._GetCsvRepr, val))
         else:
             if isinstance(val, unicode):
-                if self.__HasCommaOutOfString(val):
+                if self.__HasCommaOutOfString(val) or u"\n" in val:
                     return u"\"" + val + u"\""
                 else:
                     return val
