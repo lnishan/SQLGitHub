@@ -67,50 +67,50 @@ class SgExpression:
     _DBL_STR_REGEX = r"\"(?:[^\\\"]|\\.)*\""
     _SGL_STR_REGEX = r"\'(?:[^\\\']|\\.)*\'"
 
-    @staticmethod
-    def ExtractTokensFromExpressions(exprs):
+    @classmethod
+    def ExtractTokensFromExpressions(cls, exprs):
         ret_set = set()
         for expr in exprs:
-            expr_rem = re.sub(SgExpression._DBL_STR_REGEX, r"", expr)
-            expr_rem = re.sub(SgExpression._SGL_STR_REGEX, r"", expr_rem)  # string literals removed
-            for token in re.findall(SgExpression._TOKEN_REGEX, expr_rem):
+            expr_rem = re.sub(cls._DBL_STR_REGEX, r"", expr)
+            expr_rem = re.sub(cls._SGL_STR_REGEX, r"", expr_rem)  # string literals removed
+            for token in re.findall(cls._TOKEN_REGEX, expr_rem):
                 if not token in df.ALL_TOKENS:
                     ret_set.add(token)
         return list(ret_set)
 
-    @staticmethod
-    def IsAllTokensInAggregate(exprs):
+    @classmethod
+    def IsAllTokensInAggregate(cls, exprs):
         aggr_regex = r"((?:" + r"|".join(df.AGGREGATE_FUNCTIONS) + r")\((?:(?>[^\(\)]+|(?R))*)\))"
         for expr in exprs:
-            expr_rem = re.sub(SgExpression._DBL_STR_REGEX, r"", expr)
-            expr_rem = re.sub(SgExpression._SGL_STR_REGEX, r"", expr_rem)  # string literals removed
+            expr_rem = re.sub(cls._DBL_STR_REGEX, r"", expr)
+            expr_rem = re.sub(cls._SGL_STR_REGEX, r"", expr_rem)  # string literals removed
             while True:
                 prev_len = len(expr_rem)
                 expr_rem = regex.sub(aggr_regex, r"", expr_rem)  # one aggregate function removed
                 if len(expr_rem) == prev_len:
                     break
-            if re.search(SgExpression._TOKEN_REGEX, expr_rem):
+            if re.search(cls._TOKEN_REGEX, expr_rem):
                 return False
         return True
 
-    @staticmethod
-    def _IsFieldTokenCharacter(ch):
+    @classmethod
+    def _IsFieldTokenCharacter(cls, ch):
         return ch.isalpha() or ch == u"_"
 
-    @staticmethod
-    def _IsOperatorCharacter(ch):
+    @classmethod
+    def _IsOperatorCharacter(cls, ch):
         return not ch.isspace()
 
-    @staticmethod
-    def _IsNumericCharacter(ch):
+    @classmethod
+    def _IsNumericCharacter(cls, ch):
         return ch.isdigit() or ch == u"."
 
-    @staticmethod
-    def _GetPrecedence(opr):
+    @classmethod
+    def _GetPrecedence(cls, opr):
         return df.PRECEDENCE[opr] if opr else -100
 
-    @staticmethod
-    def _EvaluateOperatorBack(opds, oprs):
+    @classmethod
+    def _EvaluateOperatorBack(cls, opds, oprs):
         opr = oprs[-1]
         oprs.pop()
         rows = len(opds)
@@ -213,8 +213,8 @@ class SgExpression:
                 res = opds[i][-2] or opds[i][-1]
                 opds[i] = opds[i][:-2] + [res]
 
-    @staticmethod
-    def _EvaluateFunction(opds, func):
+    @classmethod
+    def _EvaluateFunction(cls, opds, func):
         # TODO(lnishan): Add new function names to definitions.py
         rows = len(opds)
         if func == "max":
@@ -258,25 +258,25 @@ class SgExpression:
             res = [row[-1] for row in opds]
             return res
 
-    @staticmethod
-    def _EvaluateOperator(opds, oprs, opr=None):
-        prec = SgExpression._GetPrecedence(opr)
+    @classmethod
+    def _EvaluateOperator(cls, opds, oprs, opr=None):
+        prec = cls._GetPrecedence(opr)
         rows = len(opds)
         if opr == u"(":
             oprs.append(u"")
             oprs.append(opr)
         elif opr == u")":
             while oprs and oprs[-1] != u"(":
-                SgExpression._EvaluateOperatorBack(opds, oprs)
+                cls._EvaluateOperatorBack(opds, oprs)
             oprs.pop()
             func = oprs.pop().lower()
             if func:
-                res = SgExpression._EvaluateFunction(opds, func)
+                res = cls._EvaluateFunction(opds, func)
                 for i in range(rows):
                     opds[i][-1] = res[i]
         elif opr == u",":
-            while oprs and SgExpression._GetPrecedence(oprs[-1]) >= prec and oprs[-1] != ",":
-                SgExpression._EvaluateOperatorBack(opds, oprs)
+            while oprs and cls._GetPrecedence(oprs[-1]) >= prec and oprs[-1] != ",":
+                cls._EvaluateOperatorBack(opds, oprs)
             if (not oprs) or (oprs and oprs[-1] != ","):
                 for i in range(rows):
                     opds[i][-1] = [opds[i][-1]]
@@ -286,23 +286,23 @@ class SgExpression:
                     opds[i] = opds[i][:-2] + [opds[i][-2] + [opds[i][-1]]]
             oprs.append(opr)
         else:
-            while oprs and SgExpression._GetPrecedence(oprs[-1]) >= prec :
-                SgExpression._EvaluateOperatorBack(opds, oprs)
+            while oprs and cls._GetPrecedence(oprs[-1]) >= prec :
+                cls._EvaluateOperatorBack(opds, oprs)
             if opr:
                 oprs.append(opr)
 
-    @staticmethod
-    def _ProcessOperator(is_start, opds, oprs, token):
+    @classmethod
+    def _ProcessOperator(cls, is_start, opds, oprs, token):
         rows = len(opds)
         token = token.lower()
         if token == u"-":
             token = u"--" if is_start else u"-"
         elif token == u"=":
             token = u"=="
-        SgExpression._EvaluateOperator(opds, oprs, token)
+        cls._EvaluateOperator(opds, oprs, token)
 
-    @staticmethod
-    def EvaluateExpression(table, expr):
+    @classmethod
+    def EvaluateExpression(cls, table, expr):
         rows = len(table)
         opds = []
         oprs = []
@@ -331,14 +331,14 @@ class SgExpression:
                 else:
                     token += ch
             elif reading == 2:  # number
-                if SgExpression._IsNumericCharacter(ch):
+                if cls._IsNumericCharacter(ch):
                     token += ch
                 else:
                     num = float(token) if u"." in token else int(token)
                     for i in range(rows):
                         opds[i].append(num)
                     token = u""
-                    if SgExpression._IsOperatorCharacter(ch):
+                    if cls._IsOperatorCharacter(ch):
                         reading = 0
                         token = ch
                         if ch in (u"(", u","):
@@ -346,11 +346,11 @@ class SgExpression:
                     else:
                         reading = None
             elif reading == 1:
-                if SgExpression._IsFieldTokenCharacter(ch):
+                if cls._IsFieldTokenCharacter(ch):
                     token += ch
                 else:
                     if token.lower() in df.OPERATOR_TOKENS:
-                        SgExpression._ProcessOperator(is_start, opds, oprs, token)
+                        cls._ProcessOperator(is_start, opds, oprs, token)
                         token = u""
                         if ch.isspace():
                             reading = None
@@ -360,11 +360,11 @@ class SgExpression:
                                 reading = 3
                                 token = u""
                                 string_ch = ch
-                            elif SgExpression._IsNumericCharacter(ch):
+                            elif cls._IsNumericCharacter(ch):
                                 reading = 2
-                            elif SgExpression._IsFieldTokenCharacter(ch):
+                            elif cls._IsFieldTokenCharacter(ch):
                                 reading = 1
-                            elif SgExpression._IsOperatorCharacter(ch):
+                            elif cls._IsOperatorCharacter(ch):
                                 reading = 0
                                 if ch in (u"(", u","):
                                     is_start = True
@@ -379,7 +379,7 @@ class SgExpression:
                         for i in range(rows):
                             opds[i].append(vals[i])
                         token = u""
-                        if SgExpression._IsOperatorCharacter(ch):
+                        if cls._IsOperatorCharacter(ch):
                             reading = 0
                             token = ch
                             if ch in (u"(", u","):
@@ -401,7 +401,7 @@ class SgExpression:
                 if is_opr:
                     token += ch
                 else:
-                    SgExpression._ProcessOperator(is_start, opds, oprs, token)
+                    cls._ProcessOperator(is_start, opds, oprs, token)
                     token = u""
                     if ch.isspace():
                         reading = None
@@ -411,11 +411,11 @@ class SgExpression:
                             reading = 3
                             token = u""
                             string_ch = ch
-                        elif SgExpression._IsNumericCharacter(ch) or (ch == u"-" and is_start):
+                        elif cls._IsNumericCharacter(ch) or (ch == u"-" and is_start):
                             reading = 2
-                        elif SgExpression._IsFieldTokenCharacter(ch):
+                        elif cls._IsFieldTokenCharacter(ch):
                             reading = 1
-                        elif SgExpression._IsOperatorCharacter(ch):
+                        elif cls._IsOperatorCharacter(ch):
                             reading = 0
                         is_start = ch in (u"(", u",")
 
@@ -428,25 +428,25 @@ class SgExpression:
                         reading = 3
                         token = u""
                         string_ch = ch
-                    elif SgExpression._IsNumericCharacter(ch) or (ch == u"-" and is_start):
+                    elif cls._IsNumericCharacter(ch) or (ch == u"-" and is_start):
                         reading = 2
-                    elif SgExpression._IsFieldTokenCharacter(ch):
+                    elif cls._IsFieldTokenCharacter(ch):
                         reading = 1
-                    elif SgExpression._IsOperatorCharacter(ch):
+                    elif cls._IsOperatorCharacter(ch):
                         reading = 0
                     is_start = ch in (u"(", u",")
-        SgExpression._EvaluateOperator(opds, oprs)  # opr = None
+        cls._EvaluateOperator(opds, oprs)  # opr = None
         return [row[0] for row in opds]
 
-    @staticmethod
-    def EvaluateExpressions(table, exprs):
+    @classmethod
+    def EvaluateExpressions(cls, table, exprs):
         ret = tb.SgTable()
         ret.SetFields(exprs)
         rows = len(table)
         for _ in range(rows):
             ret.Append([])
         for expr in exprs:
-            res = SgExpression.EvaluateExpression(table, expr)
+            res = cls.EvaluateExpression(table, expr)
             for i, val in enumerate(res):
                 # TODO(lnishan): Fix the cheat here.
                 ret._table[i].append(val)
