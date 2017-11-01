@@ -22,6 +22,26 @@ Sample Usage:
 import itertools
 
 
+class EscapeHtml:
+    MAPPING = {u"&": u"&amp;",
+               u"<": u"&lt;",
+               u">": u"&gt;",
+               u"\"": u"&quot;",
+               u"\'": u"&#39;",
+               u"\n": u"<br>\n"}
+
+    @classmethod
+    def Escape(cls, ch):
+        return cls.MAPPING[ch] if cls.MAPPING.has_key(ch) else ch
+
+    @classmethod
+    def EscapeUnicodeStr(cls, unicode_str):
+        ret = u""
+        for ch in unicode_str:
+            ret += cls.Escape(ch)
+        return ret
+
+
 class SgTable:
     """A class to store tables."""
 
@@ -91,6 +111,23 @@ class SgTable:
         ret = self._GetCsvRepr(self._fields)
         for row in self._table:
             ret += u"\n" + self._GetCsvRepr(row)
+        return ret
+
+    def InHtml(self):
+        ret = u"<html>\n<head><meta charset=\"utf-8\">\n<title>SQLGitHub Result</title>\n</head>\n<body>\n"
+
+        ret += u"<table border=1>"
+        ret += u"<tr>"
+        for field in self._fields:
+            ret += u"<td>" + EscapeHtml.EscapeUnicodeStr(field) + u"</td>"
+        ret += u"</tr>\n"
+        for row in self._table:
+            ret += u"<tr>"
+            for val in row:
+                unicode_str = val if isinstance(val, unicode) else unicode(str(val), "utf-8")
+                ret += u"<td>" + EscapeHtml.EscapeUnicodeStr(unicode_str) + u"</td>"
+            ret += u"</tr>\n"
+        ret += u"</table>\n</html>"
         return ret
 
     def GetVals(self, field):

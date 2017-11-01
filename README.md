@@ -32,7 +32,7 @@ In root directory (same directory as `SQLGitHub.py`),
 Create and edit `config.py`:  
 ```python
 token = "your token here"  # can be obtained from https://github.com/settings/tokens
-output = "str"  # or "csv" for csv output
+output = "str"  # or "csv", "html"
 ```
 
 4. Start SQLGitHub  

@@ -1,6 +1,14 @@
 """Utilities for general operations."""
 
 
+def PrintResult(table, output):
+    if output == "str":
+        print(table)
+    elif output == "csv":
+        print(table.InCsv())
+    elif output == "html":
+        print(table.InHtml())
+
 def IsNumeric(num_str):
     try:
         val = int(num_str)
@@ -40,11 +48,3 @@ def Unescape(ch):
         return "\\%"
     elif ch == "_":
         return "\\_"
-
-def EscapeHtml(ch):
-    mapping = {u"&": u"&amp;",
-               u"<": u"&lt;",
-               u">": u"&gt;",
-               u"\"": u"&quot;",
-               u"\'": u"&#39;"}
-    return mapping[ch] if mapping.has_key(ch) else ch

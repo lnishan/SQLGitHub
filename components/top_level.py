@@ -12,6 +12,7 @@ from pygments.styles.monokai import MonokaiStyle
 
 import definition
 import parser
+import utilities as util
 import tokenizer
 
 
@@ -48,10 +49,7 @@ class SQLGitHub:
             else:
                 exec_time = time.time() - start_time
                 if display_result:
-                    if self._output == "str":
-                        print(result)
-                    elif self._output == "csv":
-                        print(result.InCsv())
+                    util.PrintResult(result, self._output)
                     print("-")
                     print("Total rows: %d" % (len(result)))
                     if measure_time:
