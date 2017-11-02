@@ -218,13 +218,7 @@ class SgExpression:
         # TODO(lnishan): Add new function names to definitions.py
         # Function: abs, avg, count, max, min, sum, ascii, concat, concat_ws, find_in_set, insert, instr, length, locate, lcase, lower, left, mid, repeat, right, replace, strcmp, substr, substring, ucase, upper
         rows = len(opds)
-        if func == "abs":
-            abss = abs(row[-1] for row in opds)
-            res = []
-            for i in range(rows):
-                res.append(abss)
-            return res
-        elif func == "avg":
+        if func == "avg":
             avg = sum(row[-1] for row in opds) / float(rows)
             res = []
             for i in range(rows):
