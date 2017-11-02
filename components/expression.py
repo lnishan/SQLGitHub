@@ -216,8 +216,26 @@ class SgExpression:
     @classmethod
     def _EvaluateFunction(cls, opds, func):
         # TODO(lnishan): Add new function names to definitions.py
+        # Function: abs, avg, count, max, min, sum, ascii, concat, concat_ws, find_in_set, insert, instr, length, locate, lcase, lower, left, mid, repeat, right, replace, strcmp, substr, substring, ucase, upper
         rows = len(opds)
-        if func == "max":
+        if func == "abs":
+            abss = abs(row[-1] for row in opds)
+            res = []
+            for i in range(rows):
+                res.append(abss)
+            return res
+        elif func == "avg":
+            avg = sum(row[-1] for row in opds) / float(rows)
+            res = []
+            for i in range(rows):
+                res.append(avg)
+            return res
+        elif func == "count":
+            res = []
+            for i in range(rows):
+                res.append(rows)
+            return res
+        elif func == "max":
             mx = max(row[-1] for row in opds)
             res = []
             for i in range(rows):
@@ -235,16 +253,10 @@ class SgExpression:
             for i in range(rows):
                 res.append(sm)
             return res
-        elif func == "avg":
-            avg = sum(row[-1] for row in opds) / float(rows)
+        elif func == "ascii":
             res = []
-            for i in range(rows):
-                res.append(avg)
-            return res
-        elif func == "count":
-            res = []
-            for i in range(rows):
-                res.append(rows)
+            for row in opds:
+                res.append(" ".join(str(ord(i)) for i in row[-1]))
             return res
         elif func == "concat":
             res = []
@@ -253,6 +265,116 @@ class SgExpression:
                 for val in row[-1]:
                     cstr += util.GuaranteeUnicode(val)
                 res.append(cstr)
+            return res
+        elif func == "concat_ws":
+            res = []
+            for row in opds:
+                cstr = u""
+                sep = row[-1][0]
+                for val in row[-1][:-1]:
+                    if val != sep:
+                        cstr += util.GuaranteeUnicode(val)
+                        cstr += sep
+                cstr += util.GuaranteeUnicode(row[-1][-1])
+                res.append(cstr)
+            return res
+        elif func == "find_in_set":
+            res =[]
+            for row in opds:
+                cstr = row[-1][-1]
+                subs = row[-1][-2]
+                if subs in cstr:
+                    res.append(cstr.index(subs)+1)
+                else:
+                    res.append(0)
+            return res
+        elif func == "insert":
+            res = []
+            for row in opds:
+                x = row[-1][-3] - 1
+                y = row[-1][-2]
+                str = row[-1][-4]
+                subs = row[-1][-1]
+                res.append(str[:x] + subs + str[x+y-1:])
+            return res
+        elif func == "instr":
+            res = []
+            for row in opds:
+                res.append(row[-1][-2].find(row[-1][-1])+1)
+            return res
+        elif func in (u"lcase", u"lower"):
+            res = []
+            for row in opds:
+	        res.append(row[-1].lower())
+            return res
+        elif func == "left":
+            res = []
+            for row in opds:
+                n_char = row[-1][-1]
+                subs = row[-1][-2]
+                res.append(subs[:n_char])
+            return res
+        elif func == "length":
+            res = []
+            for row in opds:
+                res.append(len(row[-1]))
+            return res
+        elif func == "locate":
+            res = []
+            for row in opds:
+                x = len(row[-1])
+                if x == 3:
+                    st_pos = row[-1].pop()
+                cstr = row[-1].pop()
+                subs = row[-1].pop()
+                if x == 3:
+                    res.append(cstr.find(subs, st_pos)+1)
+                else:
+                    res.append(cstr.find(subs)+1)
+            return res
+        elif func in (u"mid", u"substr", u"substring"):
+            res = []
+            for row in opds:
+                x = len(row[-1])
+                if x == 3:
+                    n_len = row[-1].pop()
+                n_st = row[-1].pop() - 1
+                subs = row[-1].pop()
+                if x == 3:
+                    n_end = n_st + n_len
+                    res.append(subs[n_st:n_end]) 
+                else:
+                    res.append(subs[n_st:])
+            return res 
+        elif func == "repeat":
+            res = []
+            for row in opds:
+                cstr = u""
+                for i in range(row[-1][-1]):
+                    cstr += row[-1][-2]
+                res.append(cstr)
+            return res
+        elif func == "replace":
+            res = []
+            for row in opds:
+                res.append(row[-1][-3].replace(row[-1][-2],row[-1][-1]))
+            return res  
+        elif func == "right":
+            res = []
+            for row in opds:
+                n_char = row[-1][-1]
+                subs = row[-1][-2]
+                res.append(subs[-n_char:])
+            return res
+        elif func == "strcmp":
+            res = []
+            for row in opds:
+                res.append((row[-1][-1] == row[-1][-2]))
+            return res
+        elif func in (u"ucase", u"upper"):
+            res = []
+            for row in opds:
+                res.append(row[-1].upper())
             return res
         else:
             res = [row[-1] for row in opds]
