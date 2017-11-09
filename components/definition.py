@@ -25,7 +25,7 @@ OPERATOR_TOKENS = [u"interval",
                    u")"]
 
 AGGREGATE_FUNCTIONS = ["max", "min", "sum", "avg", "count"]
-HORIZONTAL_FUNCTIONS = ["concat"]
+HORIZONTAL_FUNCTIONS = ["ascii", "concat", "concat_ws", "find_in_set", "insert", "instr", "length", "locate", "lcase", "lower", "left", "mid", "repeat", "right", "replace", "strcmp", "substr", "substring", "ucase", "upper"]
 
 ALL_TOKENS = (COMMAND_TOKENS +
               EXIT_TOKENS +
