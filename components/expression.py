@@ -53,6 +53,8 @@ import regex  # need recursive pattern
 import definition as df
 import utilities as util
 import table as tb
+import math
+import numpy
 
 
 class SgExpression:
@@ -376,19 +378,16 @@ class SgExpression:
 		res.append(abs(row[-1]))
 	    return res
 	elif func in (u"ceil", u"ceiling"):
-	    import math
 	    res = []
             for row in opds:
 		res.append(math.ceil(row[-1]))
 	    return res
 	elif func == "exp":
-	    import math
             res = []
             for row in opds:
                 res.append(math.exp(row[-1]))
 	    return res
 	elif func == "floor":
-	    import math
             res = []
             for row in opds:
                 res.append(math.floor(row[-1]))
@@ -404,25 +403,21 @@ class SgExpression:
                 res.append(min(row[-1]))
             return res  
         elif func in (u"ln", u"log"):
-            import math
 	    res = []
 	    for row in opds:
 		res.append(math.log(row[-1]))
 	    return res
 	elif func in (u"pow", u"power"):
-	    import math
 	    res = []
             for row in opds:
 		res.append(math.pow(row[-1][-2], row[-1][-1]))
 	    return res
 	elif func == "sign":
-	    import numpy
             res = []
             for row in opds:
 		res.append(numpy.sign(row[-1]))
 	    return res
 	elif func == "sqrt":
-            import math
             res = []
             for row in opds:
                 res.append(math.sqrt(row[-1]))
