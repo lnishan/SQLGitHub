@@ -216,7 +216,7 @@ class SgExpression:
     @classmethod
     def _EvaluateFunction(cls, opds, func):
         # TODO(lnishan): Add new function names to definitions.py
-        # Function: abs, ceil, ceiling, exp, floor, greatest, least, ln, log, pow, power, sign, sqrt, avg, count, max, min, sum, ascii, concat, concat_ws, find_in_set, insert, instr, length, locate, lcase, lower, left, mid, repeat, right, replace, strcmp, substr, substring, ucase, upper
+        # Function: abs, avg, ceil, ceiling, count, exp, floor, greatest, least, ln, log, max, min, pow, power, sign, sqrt, sum, ascii, concat, concat_ws, find_in_set, insert, instr, length, locate, lcase, lower, left, mid, repeat, right, replace, strcmp, substr, substring, ucase, upper
         rows = len(opds)
         if func == "avg":
             avg = sum(row[-1] for row in opds) / float(rows)
