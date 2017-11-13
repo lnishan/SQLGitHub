@@ -250,7 +250,7 @@ class SgExpression:
         elif func == "ascii":
             res = []
             for row in opds:
-                res.append(" ".join(str(ord(i)) for i in row[-1]))
+                res.append(u" ".join(str(ord(i)) for i in row[-1]))
             return res
         elif func == "concat":
             res = []
