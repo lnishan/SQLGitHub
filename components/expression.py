@@ -216,7 +216,7 @@ class SgExpression:
     @classmethod
     def _EvaluateFunction(cls, opds, func):
         # TODO(lnishan): Add new function names to definitions.py
-        # Function: abs, avg, count, max, min, sum, ascii, concat, concat_ws, find_in_set, insert, instr, length, locate, lcase, lower, left, mid, repeat, right, replace, strcmp, substr, substring, ucase, upper
+        # Function: abs, ceil, ceiling, exp, floor, greatest, least, ln, log, pow, power, sign, sqrt, avg, count, max, min, sum, ascii, concat, concat_ws, find_in_set, insert, instr, length, locate, lcase, lower, left, mid, repeat, right, replace, strcmp, substr, substring, ucase, upper
         rows = len(opds)
         if func == "avg":
             avg = sum(row[-1] for row in opds) / float(rows)
@@ -370,7 +370,64 @@ class SgExpression:
             for row in opds:
                 res.append(row[-1].upper())
             return res
-        else:
+	elif func == "abs":
+	    res = []
+	    for row in opds:
+		res.append(abs(row[-1]))
+	    return res
+	elif func in (u"ceil", u"ceiling"):
+	    import math
+	    res = []
+            for row in opds:
+		res.append(math.ceil(row[-1]))
+	    return res
+	elif func == "exp":
+	    import math
+            res = []
+            for row in opds:
+                res.append(math.exp(row[-1]))
+	    return res
+	elif func == "floor":
+	    import math
+            res = []
+            for row in opds:
+                res.append(math.floor(row[-1]))
+	    return res
+        elif func == "greatest":
+	    res = []
+            for row in opds:
+		res.append(max(row[-1]))
+	    return res
+        elif func == "least":
+            res = []
+            for row in opds:
+                res.append(min(row[-1]))
+            return res  
+        elif func in (u"ln", u"log"):
+            import math
+	    res = []
+	    for row in opds:
+		res.append(math.log(row[-1]))
+	    return res
+	elif func in (u"pow", u"power"):
+	    import math
+	    res = []
+            for row in opds:
+		res.append(math.pow(row[-1][-2], row[-1][-1]))
+	    return res
+	elif func == "sign":
+	    import numpy
+            res = []
+            for row in opds:
+		res.append(numpy.sign(row[-1]))
+	    return res
+	elif func == "sqrt":
+            import math
+            res = []
+            for row in opds:
+                res.append(math.sqrt(row[-1]))
+            return res
+	else:
             res = [row[-1] for row in opds]
             return res
 
