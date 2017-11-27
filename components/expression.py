@@ -53,7 +53,8 @@ import regex  # need recursive pattern
 import definition as df
 import utilities as util
 import table as tb
-
+import math
+from datetime import date
 
 class SgExpression:
     """A set of utility functions to evaluate expressions."""
@@ -216,7 +217,6 @@ class SgExpression:
     @classmethod
     def _EvaluateFunction(cls, opds, func):
         # TODO(lnishan): Add new function names to definitions.py
-        # Function: abs, avg, count, max, min, sum, ascii, concat, concat_ws, find_in_set, insert, instr, length, locate, lcase, lower, left, mid, repeat, right, replace, strcmp, substr, substring, ucase, upper
         rows = len(opds)
         if func == "avg":
             avg = sum(row[-1] for row in opds) / float(rows)
@@ -369,6 +369,56 @@ class SgExpression:
             res = []
             for row in opds:
                 res.append(row[-1].upper())
+            return res
+        elif func == "abs":
+            res = []
+            for row in opds:
+                res.append(abs(row[-1]))
+            return res
+        elif func in (u"ceil", u"ceiling"):
+            res = []
+            for row in opds:
+                res.append(math.ceil(row[-1]))
+            return res
+        elif func == "exp":
+            res = []
+            for row in opds:
+                res.append(math.exp(row[-1]))
+                return res
+        elif func == "floor":
+            res = []
+            for row in opds:
+                res.append(math.floor(row[-1]))
+                return res
+        elif func == "greatest":
+            res = []
+            for row in opds:
+                res.append(max(row[-1]))
+            return res
+        elif func == "least":
+            res = []
+            for row in opds:
+                res.append(min(row[-1]))
+            return res  
+        elif func in (u"ln", u"log"):
+            res = []
+            for row in opds:
+                res.append(math.log(row[-1]))
+            return res
+        elif func in (u"pow", u"power"):
+            res = []
+            for row in opds:
+                res.append(math.pow(row[-1][-2], row[-1][-1]))
+            return res
+        elif func == "sign":
+            res = []
+            for row in opds:
+                res.append((row[-1] > 0) - (row[-1] < 0))
+            return res
+        elif func == "sqrt":
+            res = []
+            for row in opds:
+                res.append(math.sqrt(row[-1]))
             return res
         else:
             res = [row[-1] for row in opds]
