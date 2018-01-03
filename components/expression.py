@@ -72,6 +72,8 @@ class SgExpression:
     def ExtractTokensFromExpressions(cls, exprs):
         ret_set = set()
         for expr in exprs:
+            if expr == u"*":
+                return [u"*"]
             expr_rem = re.sub(cls._DBL_STR_REGEX, r"", expr)
             expr_rem = re.sub(cls._SGL_STR_REGEX, r"", expr_rem)  # string literals removed
             for token in re.findall(cls._TOKEN_REGEX, expr_rem):

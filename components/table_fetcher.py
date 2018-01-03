@@ -46,7 +46,7 @@ class SgTableFetcher:
             return tmp[0], tmp[1], tmp[2:]
 
     def _GetKeys(self, cls):
-        if self._rel_keys:
+        if not u"*" in self._rel_keys:
             # TODO(lnishan): Might want to check for existence of every key in self._rel_keys
             return self._rel_keys
         else:
@@ -84,10 +84,10 @@ class SgTableFetcher:
             return self.__ConvertNonList(val)
 
     def _GetVals(self, cls):
-        if self._rel_keys:
+        if not u"*" in self._rel_keys:
             return [self.__ConvertVal(getattr(cls, key)) for key in self._rel_keys]
         else:
-            ret = [self.__ConvertVal(val) for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
+            return [self.__ConvertVal(val) for key, val in inspect.getmembers(cls, lambda m: not inspect.ismethod(m)) if not key.startswith("_")]
 
     def _IsDateRange(self, info):
         if not info:

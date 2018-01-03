@@ -37,6 +37,8 @@ class SgSession:
         if self._orders:
             rel_keys += SgExpression.ExtractTokensFromExpressions(self._orders[0])
         rel_keys = list(set(rel_keys))
+        if u"*" in rel_keys:
+            rel_keys = [u"*"]
         self._fetcher = table_fetcher.SgTableFetcher(github, rel_keys)
 
     def _GetEmptyTable(self):
@@ -50,6 +52,9 @@ class SgSession:
             source_table = self._source.Execute() if isinstance(self._source, SgSession) else self._fetcher.Fetch(self._source)
             if not source_table[:]:
                 return self._GetEmptyTable()
+            else:
+                if u"*" in self._field_exprs:
+                    self._field_exprs = source_table.GetFields()
         else:
             source_table = tb.SgTable()
             source_table.SetFields([u"Dummy Field"])
