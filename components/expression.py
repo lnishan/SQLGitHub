@@ -218,6 +218,10 @@ class SgExpression:
     def _EvaluateFunction(cls, opds, func):
         # TODO(lnishan): Add new function names to definitions.py
         rows = len(opds)
+        if func == "zero":  # dummy function
+            for row in opds:
+                print(row[-1])
+            return [0] * rows
         if func == "avg":
             avg = sum(row[-1] for row in opds) / float(rows)
             res = []
@@ -432,6 +436,9 @@ class SgExpression:
             oprs.append(u"")
             oprs.append(opr)
         elif opr == u")":
+            if oprs[-1] == u"(":
+                for i in range(rows):
+                    opds[i].append([])
             while oprs and oprs[-1] != u"(":
                 cls._EvaluateOperatorBack(opds, oprs)
             oprs.pop()
