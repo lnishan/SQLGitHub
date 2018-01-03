@@ -18,7 +18,7 @@ from ordering import SgTableOrdering
 class SgSession:
     """A class for SQLGitHub sessions."""
 
-    def __init__(self, github, field_exprs, source, condition=None, groups=None, having=None, orders=None, limit=None):
+    def __init__(self, github, field_exprs, source=None, condition=None, groups=None, having=None, orders=None, limit=None):
         self._field_exprs = field_exprs
         self._source = source
         self._condition = condition
@@ -46,9 +46,14 @@ class SgSession:
 
     def Execute(self):
         # source is either a label (eg. "google.issues") or a SgSession
-        source_table = self._source.Execute() if isinstance(self._source, SgSession) else self._fetcher.Fetch(self._source)
-        if not source_table[:]:
-            return self._GetEmptyTable()
+        if self._source:
+            source_table = self._source.Execute() if isinstance(self._source, SgSession) else self._fetcher.Fetch(self._source)
+            if not source_table[:]:
+                return self._GetEmptyTable()
+        else:
+            source_table = tb.SgTable()
+            source_table.SetFields([u"Dummy Field"])
+            source_table.Append([u"Dummy Value"])
 
         # evaluate where
         if self._condition:
