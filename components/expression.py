@@ -219,8 +219,6 @@ class SgExpression:
         # TODO(lnishan): Add new function names to definitions.py
         rows = len(opds)
         if func == "zero":  # dummy function
-            for row in opds:
-                print(row[-1])
             return [0] * rows
         if func == "avg":
             avg = sum(row[-1] for row in opds) / float(rows)
