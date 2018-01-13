@@ -436,9 +436,11 @@ class SgExpression:
             oprs.append(u"")
             oprs.append(opr)
         elif opr == u")":
+            """
             if oprs[-1] == u"(":
                 for i in range(rows):
                     opds[i].append([])
+            """
             while oprs and oprs[-1] != u"(":
                 cls._EvaluateOperatorBack(opds, oprs)
             oprs.pop()
