@@ -436,11 +436,6 @@ class SgExpression:
             oprs.append(u"")
             oprs.append(opr)
         elif opr == u")":
-            """
-            if oprs[-1] == u"(":
-                for i in range(rows):
-                    opds[i].append([])
-            """
             while oprs and oprs[-1] != u"(":
                 cls._EvaluateOperatorBack(opds, oprs)
             oprs.pop()
@@ -489,7 +484,7 @@ class SgExpression:
         string_ch = None
         token = u""
         expr += u" "  # add a terminating character (to end token parsing)
-        for ch in expr:
+        for idx, ch in enumerate(expr):
             if reading == 3:  # string
                 if is_escaping:
                     # unescape characters
@@ -546,6 +541,12 @@ class SgExpression:
                     elif ch == u"(":  # function
                         oprs.append(token)
                         oprs.append(ch)
+                        idx2 = idx + 1
+                        while idx2 < len(expr) and expr[idx2] == u" ":
+                            idx2 = idx2 + 1
+                        if idx2 < len(expr) and expr[idx2] == u")":
+                            for i in range(rows):
+                                opds[i].append(None)
                         is_start = True
                         token = u""
                         reading = None
