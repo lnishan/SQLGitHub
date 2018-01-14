@@ -54,7 +54,7 @@ import definition as df
 import utilities as util
 import table as tb
 import math
-from datetime import date
+import datetime
 
 class SgExpression:
     """A set of utility functions to evaluate expressions."""
@@ -423,6 +423,26 @@ class SgExpression:
             res = []
             for row in opds:
                 res.append(math.sqrt(row[-1]))
+            return res
+        elif func in (u"curdate", u"current_date"):
+            res = []
+            for row in opds:
+                res.append(datetime.date.today().strftime('%Y-%m-%d'))
+            return res
+        elif func in (u"curtime", u"current_time"):
+            res = []
+            for row in opds:
+                res.append(datetime.datetime.now().strftime('%H:%M:%S'))
+            return res
+        elif func in (u"current_timestamp", u"local", u"localtimestamp", u"now"):
+            res = []
+            for row in opds:
+                res.append(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            return res
+        elif func == "bin":
+            res = []
+            for row in opds:
+                res.append(bin(row[-1])[2:])
             return res
         else:
             res = [row[-1] for row in opds]
