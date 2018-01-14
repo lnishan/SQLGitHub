@@ -29,11 +29,10 @@ class SQLGitHub:
                                         ignore_case=True)
         self._style = style_from_pygments(MonokaiStyle)
 
-    def Execute(self, sql, measure_time=True, display_result=True):
+    def Execute(self, sql, display_result=True):
         if not sql:
             return
-        if measure_time:
-            start_time = time.time()
+        start_time = time.time()
         tokens = tokenizer.SgTokenizer.Tokenize(sql)
         try:
             session = self._parser.Parse(tokens)
@@ -52,11 +51,8 @@ class SQLGitHub:
                     util.PrintResult(result, self._output)
                     print("-")
                     print("Total rows: %d" % (len(result)))
-                    if measure_time:
-                        print("Total execution time: %.3fs"% (exec_time))
-                else:
-                    return result, measure_time
-        
+                    print("Total execution time: %.3fs"% (exec_time))
+                return result, exec_time
 
     def Start(self):
         while True:

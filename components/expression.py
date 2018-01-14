@@ -72,6 +72,8 @@ class SgExpression:
     def ExtractTokensFromExpressions(cls, exprs):
         ret_set = set()
         for expr in exprs:
+            if expr == u"*":
+                return [u"*"]
             expr_rem = re.sub(cls._DBL_STR_REGEX, r"", expr)
             expr_rem = re.sub(cls._SGL_STR_REGEX, r"", expr_rem)  # string literals removed
             for token in re.findall(cls._TOKEN_REGEX, expr_rem):
@@ -218,6 +220,8 @@ class SgExpression:
     def _EvaluateFunction(cls, opds, func):
         # TODO(lnishan): Add new function names to definitions.py
         rows = len(opds)
+        if func == "zero":  # dummy function
+            return [0] * rows
         if func == "avg":
             avg = sum(row[-1] for row in opds) / float(rows)
             res = []
@@ -480,7 +484,7 @@ class SgExpression:
         string_ch = None
         token = u""
         expr += u" "  # add a terminating character (to end token parsing)
-        for ch in expr:
+        for idx, ch in enumerate(expr):
             if reading == 3:  # string
                 if is_escaping:
                     # unescape characters
@@ -537,6 +541,12 @@ class SgExpression:
                     elif ch == u"(":  # function
                         oprs.append(token)
                         oprs.append(ch)
+                        idx2 = idx + 1
+                        while idx2 < len(expr) and expr[idx2] == u" ":
+                            idx2 = idx2 + 1
+                        if idx2 < len(expr) and expr[idx2] == u")":
+                            for i in range(rows):
+                                opds[i].append(None)
                         is_start = True
                         token = u""
                         reading = None
