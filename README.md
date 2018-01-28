@@ -7,7 +7,8 @@ SQLGitHub features a SQL-like syntax that allows you to:
 
 You may also think of it as a better, enhanced frontend layer built on top of GitHub's RESTful API.
 
-- [Presentation](https://raw.githubusercontent.com/lnishan/SQLGitHub/master/assets/SQLGitHub.pdf)
+- [Presentation](assets/slides.pdf)
+- [Poster](assets/poster.pdf)
 
 ![ScreenshotIntro](https://i.imgur.com/Ii355Ds.png)
 
