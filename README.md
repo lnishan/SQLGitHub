@@ -103,8 +103,15 @@ SELECT
 
 Most of the fields listed in [GitHub API v3](https://developer.github.com/v3/) are available for query.  
 For example, for `org_name.repos` queries, you can specify `id`, `name`, `full_name`, `description` ... etc. in expr's.
+You may also use `select *` for the full list of fields.
 
-### Supported Functions and Operators
+### Supported Functions
 
-We are actively adding support for functions.  
-Refer to `components/expression.py` for the current supported functions and operators.
+**String** Functions:
+"concat", "concat_ws", "find_in_set", "insert", "instr", "length", "locate", "lcase", "lower", "left", "mid", "repeat", "right", "replace", "strcmp", "substr", "substring", "ucase", “upper"
+
+**Numeric** Functions:
+"avg", "count", "max", "min", “sum", "abs", "ceil", "ceiling", "exp", "floor", "greatest", "least", "ln", "log", "pow", "power", "sign", "sqrt"
+
+**Date & Advanced** Functions:
+"curdate", "current_date", "current_time", "current_timestamp", "curtime", "localtime", "localtimestamp", "now", “bin"
