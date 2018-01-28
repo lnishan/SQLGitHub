@@ -107,11 +107,11 @@ You may also use `select *` for the full list of fields.
 
 ### Supported Functions
 
-**String** Functions:  
+**String Functions:**  
 "concat", "concat_ws", "find_in_set", "insert", "instr", "length", "locate", "lcase", "lower", "left", "mid", "repeat", "right", "replace", "strcmp", "substr", "substring", "ucase", “upper"
 
-**Numeric** Functions:  
+**Numeric Functions:**  
 "avg", "count", "max", "min", “sum", "abs", "ceil", "ceiling", "exp", "floor", "greatest", "least", "ln", "log", "pow", "power", "sign", "sqrt"
 
-**Date & Advanced** Functions:  
+**Date & Advanced Functions:**  
 "curdate", "current_date", "current_time", "current_timestamp", "curtime", "localtime", "localtimestamp", "now", “bin"
