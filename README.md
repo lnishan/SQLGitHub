@@ -1,6 +1,6 @@
 # SQLGitHub
 
-SQLGitHub - Access GitHub API with SQL-like syntaxes
+SQLGitHub — Managing GitHub organization made easier.
 
 SQLGitHub features a SQL-like syntax that allows you to:   
 **Query information about an organization as a whole.**
