@@ -1,6 +1,9 @@
 # SQLGitHub
 
-SQLGitHub — Managing GitHub organization made easier.
+SQLGitHub — Managing GitHub organization made easier
+
+
+## Introduction
 
 SQLGitHub features a SQL-like syntax that allows you to:   
 **Query information about an organization as a whole.**
